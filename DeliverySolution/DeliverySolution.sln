@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryApi", "DeliveryApi\DeliveryApi.csproj", "{68642D77-39AA-4DE1-93B6-33BC69A72F65}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{429E3DCB-DAC8-4236-B30B-C267D1CDD099}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+		docker-compose.override.yml = docker-compose.override.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryDomain", "DeliveryDomain\DeliveryDomain.csproj", "{577E1F90-AE98-4FE7-A950-A1465A7AFC56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryInfrastructure", "DeliveryInfrastructure\DeliveryInfrastructure.csproj", "{550D1077-3A8F-44E0-A124-550F0808536F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{68642D77-39AA-4DE1-93B6-33BC69A72F65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68642D77-39AA-4DE1-93B6-33BC69A72F65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68642D77-39AA-4DE1-93B6-33BC69A72F65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68642D77-39AA-4DE1-93B6-33BC69A72F65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{577E1F90-AE98-4FE7-A950-A1465A7AFC56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{577E1F90-AE98-4FE7-A950-A1465A7AFC56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{577E1F90-AE98-4FE7-A950-A1465A7AFC56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{577E1F90-AE98-4FE7-A950-A1465A7AFC56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{550D1077-3A8F-44E0-A124-550F0808536F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{550D1077-3A8F-44E0-A124-550F0808536F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{550D1077-3A8F-44E0-A124-550F0808536F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{550D1077-3A8F-44E0-A124-550F0808536F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

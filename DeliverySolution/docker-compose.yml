@@ -1,0 +1,18 @@
+﻿version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    
+  mysql:
+    image: mysql:8.0.33
+    restart: always
+    
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    restart: always
+    
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.0
+    restart: always
