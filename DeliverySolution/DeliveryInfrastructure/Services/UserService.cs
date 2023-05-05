@@ -1,13 +1,13 @@
-using DeliveryDomain.DomainModels;
+using DeliveryDomain.DomainModels.Users;
 using DeliveryDomain.Interfaces.Services;
 
 namespace DeliveryInfrastructure.Services;
 
 public class UserService : IUserService
 {
-    private readonly IApplicationContext _context;
+    private readonly IUserDataContext _context;
 
-    public UserService(IApplicationContext context)
+    public UserService(IUserDataContext context)
     {
         _context = context;
     }
@@ -24,7 +24,7 @@ public class UserService : IUserService
         return users?.Select(x => x.ToDomain());
     }
 
-    public UserDomain? GetById(int id) 
+    public UserDomain? GetById(int? id) 
     {
         var user = _context.Users?.Find(id);
         return user?.ToDomain();

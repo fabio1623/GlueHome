@@ -14,7 +14,7 @@ public class JwtMiddleware
 
     public async Task Invoke(HttpContext context, IUserService userService, IJwtUtils jwtUtils)
     {
-        var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+        var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").LastOrDefault();
         if (token != null)
         {
             var userId = jwtUtils.ValidateJwtToken(token);
@@ -22,7 +22,8 @@ public class JwtMiddleware
             {
                 // attach user to context on successful jwt validation
                 var userDomain = userService.GetById(userId.Value);
-                context.Items["User"] = new User(userDomain);
+                if (userDomain != null)
+                    context.Items["User"] = new User(userDomain);
             }
         }
 

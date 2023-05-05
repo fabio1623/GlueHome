@@ -1,5 +1,4 @@
 using DeliveryApi.Models.Users;
-using DeliveryDomain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -24,10 +23,9 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
 
         // authorization
         var user = (User?)context.HttpContext.Items["User"];
-        if (!Enum.TryParse<Role>(user?.Role, true, out var parsedRole))
-            throw new AppException($"Could not parse RoleInfra '{user?.Role}'");
+        var couldParseRole = Enum.TryParse<Role>(user?.Role, true, out var parsedRole);
         
-        if (_roles.Any() && !_roles.Contains(parsedRole))
+        if (user == null || (_roles.Any() && (!couldParseRole || !_roles.Contains(parsedRole))))
         {
             // not logged in or role not authorized
             context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };

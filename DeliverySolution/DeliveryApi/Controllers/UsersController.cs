@@ -6,9 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DeliveryApi.Controllers;
 
 [Authorize(Role.Admin)]
-[ApiController]
-[Route("[controller]")]
-public class UsersController : ControllerBase
+public class UsersController : ControllerExtensions
 {
     private readonly IUserBusiness _userBusiness;
 
@@ -19,32 +17,34 @@ public class UsersController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("[action]")]
-    public IActionResult Authenticate(AuthenticateRequest model)
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Post))]
+    public ActionResult<AuthenticateResponse> Authenticate(AuthenticateRequest model)
     {
         var authenticateRequestDomain = model.ToDomainModel();
         var authenticateResponseDomain = _userBusiness.Authenticate(authenticateRequestDomain);
-        return Ok(new AuthenticateResponse(authenticateResponseDomain));
+        
+        return authenticateResponseDomain == null
+            ? Problem("Could not authenticate user.")
+            : new AuthenticateResponse(authenticateResponseDomain);
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
+    public ActionResult<IEnumerable<User>?> GetAll()
     {
         var userDomainList = _userBusiness.GetAll();
-        var users = userDomainList.Select(x => new User(x));
-        return Ok(users);
+        var users = userDomainList?.Select(x => new User(x));
+        return users?.ToList();
     }
 
-    [HttpGet("{id:int}")]
-    public IActionResult GetById(int id)
+    [HttpGet("{userId:int}")]
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
+    public ActionResult<User> Get(int userId)
     {
-        var userDomain = _userBusiness.GetById(id);
-        return Ok(new User(userDomain));
-        // // only admins can access other user records
-        // var currentUser = (UserInfra?)HttpContext.Items["User"];
-        // if (id != currentUser?.Id && currentUser?.RoleInfra != RoleInfra.Admin)
-        //     return Unauthorized(new { message = "Unauthorized" });
-        //
-        // var user =  _userService.GetById(id);
-        // return Ok(user);
+        var userDomain = _userBusiness.GetById(userId);
+        
+        return userDomain == null ?
+            NotFoundProblem($"User '{userId}' does not exist.", type : nameof(DeliveriesController)) :
+            new User(userDomain);
     }
 }

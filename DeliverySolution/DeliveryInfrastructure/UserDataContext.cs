@@ -1,14 +1,14 @@
-using DeliveryInfrastructure.InfrastructureModels;
+using DeliveryInfrastructure.InfrastructureModels.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace DeliveryInfrastructure;
 
-public class ApplicationContext : DbContext, IApplicationContext
+public class UserDataContext : DbContext, IUserDataContext
 {
     public DbContext DbContext => this;
     public DbSet<UserInfra>? Users { get; set; }
 
-    public ApplicationContext()
+    public UserDataContext()
     {
     }
 

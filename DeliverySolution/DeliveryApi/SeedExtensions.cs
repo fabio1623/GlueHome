@@ -1,5 +1,5 @@
 using DeliveryInfrastructure;
-using DeliveryInfrastructure.InfrastructureModels;
+using DeliveryInfrastructure.InfrastructureModels.Users;
 using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace DeliveryApi;
@@ -17,7 +17,7 @@ public static class SeedExtensions
         };
 
         using var scope = webApplication.Services.CreateScope();
-        var applicationContext = scope.ServiceProvider.GetRequiredService<IApplicationContext>();
+        var applicationContext = scope.ServiceProvider.GetRequiredService<IUserDataContext>();
         applicationContext.Users?.AddRange(users);
         applicationContext.DbContext.SaveChanges();
 

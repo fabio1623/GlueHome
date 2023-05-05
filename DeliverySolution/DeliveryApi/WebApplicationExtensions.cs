@@ -36,7 +36,6 @@ namespace DeliveryApi
         private static IApplicationBuilder SetMiddlewares(this IApplicationBuilder applicationBuilder)
         {
             return applicationBuilder
-                .UseMiddleware<ErrorHandlerMiddleware>()
                 .UseMiddleware<JwtMiddleware>();
         }
     }

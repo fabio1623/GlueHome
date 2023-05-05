@@ -7,6 +7,8 @@ using DeliveryDomain.Interfaces.Configurations;
 using DeliveryDomain.Interfaces.Services;
 using DeliveryInfrastructure;
 using DeliveryInfrastructure.Services;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using RabbitMQ.Client;
@@ -21,11 +23,12 @@ public static class ServiceCollectionExtensions
 
         webApplicationBuilder
             .Services
-            .AddScoped<IApplicationContext, ApplicationContext>()
             .AddCors()
             .AddResponseCompression()
             .AddConfigurations(configurationManager)
+            .AddFluentValidationConfigurations()
             .AddRabbitMqConfigurations(configurationManager)
+            .AddDataContext()
             .AddBusinesses()
             .AddServices()
             .AddEndpointsApiExplorer()
@@ -60,6 +63,14 @@ public static class ServiceCollectionExtensions
             );
     }
     
+    private static IServiceCollection AddFluentValidationConfigurations(this IServiceCollection services)
+    {
+        return services
+            .AddFluentValidationAutoValidation()
+            .AddFluentValidationClientsideAdapters()
+            .AddValidatorsFromAssemblyContaining<Program>();
+    }
+    
     private static IServiceCollection AddRabbitMqConfigurations(this IServiceCollection services, IConfiguration configuration)
     {
         return services
@@ -70,6 +81,13 @@ public static class ServiceCollectionExtensions
                 Password = configuration["RabbitMQConfiguration:Password"]
             })
             .AddSingleton<IRabbitMqService,RabbitMqService>();
+    }
+
+    private static IServiceCollection AddDataContext(this IServiceCollection services)
+    {
+        return services
+            .AddSingleton<IUserDataContext, UserDataContext>()
+            .AddSingleton<IDataContext, DataContext>();
     }
     
     private static IServiceCollection AddBusinesses(this IServiceCollection services)

@@ -1,14 +1,11 @@
-using System.ComponentModel.DataAnnotations;
-using DeliveryDomain.DomainModels;
+using DeliveryDomain.DomainModels.Users;
+using FluentValidation;
 
 namespace DeliveryApi.Models.Users;
 
 public class AuthenticateRequest
 {
-    [Required]
     public string? Username { get; set; }
-
-    [Required]
     public string? Password { get; set; }
     
     public AuthenticateRequestDomain ToDomainModel()
@@ -18,5 +15,17 @@ public class AuthenticateRequest
             Username = Username,
             Password = Password
         };
+    }
+}
+
+public class AuthenticateRequestValidator : AbstractValidator<AuthenticateRequest>
+{
+    public AuthenticateRequestValidator()
+    {
+        RuleFor(x => x.Username)
+            .NotEmpty();
+        
+        RuleFor(x => x.Password)
+            .NotEmpty();
     }
 }

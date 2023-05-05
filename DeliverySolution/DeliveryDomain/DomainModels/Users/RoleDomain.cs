@@ -1,4 +1,4 @@
-namespace DeliveryDomain.DomainModels;
+namespace DeliveryDomain.DomainModels.Users;
 
 public enum RoleDomain
 {

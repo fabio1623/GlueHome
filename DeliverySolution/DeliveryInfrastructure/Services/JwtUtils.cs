@@ -1,34 +1,54 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using DeliveryDomain.DomainModels;
+using DeliveryDomain.DomainModels.Users;
 using DeliveryDomain.Interfaces.Configurations;
 using DeliveryDomain.Interfaces.Services;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace DeliveryInfrastructure.Services;
 
 public class JwtUtils : IJwtUtils
 {
-    private readonly IAppSettings _appSettings;
+    private const string UserIdClaimType = "userId";
 
-    public JwtUtils(IAppSettings appSettings)
+    private readonly ILogger<JwtUtils> _logger;
+    private readonly SymmetricSecurityKey? _symmetricSecurityKey;
+
+    public JwtUtils(IAppSettings appSettings, ILogger<JwtUtils> logger)
     {
-        _appSettings = appSettings;
+        _logger = logger;
+        
+        if (string.IsNullOrWhiteSpace(appSettings.Secret))
+        {
+            _logger.LogCritical($"'{nameof(appSettings.Secret)}' is not set.");
+            return;
+        }
+        
+        var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+        _symmetricSecurityKey = new SymmetricSecurityKey(key);
     }
 
-    public string GenerateJwtToken(UserDomain user)
+    public string? GenerateJwtToken(UserDomain? user)
     {
+        var userId = user?.Id?.ToString();
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            _logger.LogWarning($"'{nameof(user.Id)}' is not set.");
+            return string.Empty;
+        }
+
         // generate token that is valid for 7 days
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+        
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
+            Subject = new ClaimsIdentity(new[] { new Claim(UserIdClaimType, userId) }),
             Expires = DateTime.UtcNow.AddDays(7),
-            SigningCredentials =
-                new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            SigningCredentials = new SigningCredentials(_symmetricSecurityKey, SecurityAlgorithms.HmacSha256Signature)
         };
+        
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
@@ -39,13 +59,12 @@ public class JwtUtils : IJwtUtils
             return null;
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
         try
         {
             tokenHandler.ValidateToken(token, new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
+                IssuerSigningKey = _symmetricSecurityKey,
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
@@ -53,7 +72,7 @@ public class JwtUtils : IJwtUtils
             }, out var validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
-            var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+            var userId = int.Parse(jwtToken.Claims.First(x => x.Type == UserIdClaimType).Value);
 
             // return user id from JWT token if validation successful
             return userId;
