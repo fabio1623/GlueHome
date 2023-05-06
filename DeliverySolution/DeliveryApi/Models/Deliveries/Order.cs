@@ -33,7 +33,9 @@ public class OrderValidator : AbstractValidator<Order?>
     public OrderValidator()
     {
         RuleFor(x => x!.OrderNumber)
-            .NotEmpty();
+            .NotEmpty()
+            .Must(x => x != null && !x.Contains(' '))
+            .WithMessage($"Spaces are not allowed in {nameof(Order.OrderNumber)}.");
 
         RuleFor(x => x!.Sender)
             .NotEmpty();
