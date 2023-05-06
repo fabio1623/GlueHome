@@ -6,6 +6,8 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["DeliveryApi/DeliveryApi.csproj", "DeliveryApi/"]
+COPY ["DeliveryDomain/DeliveryDomain.csproj", "DeliveryDomain/"]
+COPY ["DeliveryInfrastructure/DeliveryInfrastructure.csproj", "DeliveryInfrastructure/"]
 RUN dotnet restore "DeliveryApi/DeliveryApi.csproj"
 COPY . .
 WORKDIR "/src/DeliveryApi"

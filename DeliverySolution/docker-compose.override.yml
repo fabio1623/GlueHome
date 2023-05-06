@@ -1,6 +1,10 @@
 ﻿version: "3.9"
 
 services:
+  delivery.api:
+    ports:
+      - "443:443"
+  
   rabbitmq:
     environment:
       RABBITMQ_DEFAULT_USER: guest

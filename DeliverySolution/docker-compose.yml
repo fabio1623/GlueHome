@@ -1,6 +1,12 @@
 ﻿version: "3.9"
 
 services:
+  delivery.api:
+    image: ${DOCKER_REGISTRY-}delivery.api
+    build:
+      context: .
+      dockerfile: DeliveryApi/Dockerfile
+        
   rabbitmq:
     image: rabbitmq:3-management
     restart: always
