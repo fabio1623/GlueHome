@@ -2,8 +2,28 @@
 
 services:
   delivery.api:
+    environment:
+      - AppSettings__Secret=03609307-0bb7-40cf-83c2-9998a50d0aff
+        
+      - ElasticSearchConfiguration__ConnectionString=http://elasticsearch:9200
+      
+      - MySqlConfiguration__Server=mysql
+      - MySqlConfiguration__DbName=delivery_db
+      - MySqlConfiguration__UserName=delivery_db_user
+      - MySqlConfiguration__Password=delivery_db_password
+        
+      - RabbitMqConfiguration__HostName=rabbitmq
+      - RabbitMqConfiguration__UserName=guest
+      - RabbitMqConfiguration__Password=guest
+      - RabbitMqConfiguration__ExchangeName=delivery-exchange
+        
+      - Serilog__MinimumLevel__Default=Information
+      - Serilog__MinimumLevel__Override__Microsoft=Information
+      - Serilog__MinimumLevel__Override__System=Warning
+      - Serilog__Properties__Application=delivery-api
+      - Serilog__AllowedHosts=*
     ports:
-      - "443:443"
+      - "80:80"
   
   rabbitmq:
     environment:
