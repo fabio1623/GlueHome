@@ -23,6 +23,7 @@ public class MySqlInitializer : IMySqlInitializer
         await InitializeDatabase();
         await InitializeTables();
         await SeedUsers();
+        // await AddTrigger();
     }
     
     private async Task InitializeDatabase()
@@ -83,6 +84,24 @@ public class MySqlInitializer : IMySqlInitializer
         };
 
         await connection.ExecuteAsync(sql, users);
+    }
+
+    private async Task AddTrigger()
+    {
+        using var connection = CreateConnection();
+        const string sql = @"
+            CREATE TRIGGER delivery_expire_trigger AFTER INSERT ON deliveries
+            FOR EACH ROW
+            BEGIN
+                UPDATE deliveries
+                SET state = 'Expired'
+                WHERE state IN ('Created', 'Approved')
+                    AND EndTime < UTC_TIMESTAMP()
+                    AND OrderNumber = NEW.OrderNumber;
+            END;
+        ";
+        
+        await connection.ExecuteAsync(sql);
     }
     
     private IDbConnection CreateConnection()

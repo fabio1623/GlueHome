@@ -12,6 +12,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryDomain", "DeliveryD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryInfrastructure", "DeliveryInfrastructure\DeliveryInfrastructure.csproj", "{550D1077-3A8F-44E0-A124-550F0808536F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryDomainTests", "Tests\DeliveryDomainTests\DeliveryDomainTests.csproj", "{A4B5DD1D-EDC2-4D1B-94C0-902D54AD0490}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryApiTests", "Tests\DeliveryApiTests\DeliveryApiTests.csproj", "{3DD5DAC2-EDD4-4A30-B3DC-8A977CAF5681}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +34,13 @@ Global
 		{550D1077-3A8F-44E0-A124-550F0808536F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{550D1077-3A8F-44E0-A124-550F0808536F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{550D1077-3A8F-44E0-A124-550F0808536F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4B5DD1D-EDC2-4D1B-94C0-902D54AD0490}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4B5DD1D-EDC2-4D1B-94C0-902D54AD0490}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4B5DD1D-EDC2-4D1B-94C0-902D54AD0490}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4B5DD1D-EDC2-4D1B-94C0-902D54AD0490}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DD5DAC2-EDD4-4A30-B3DC-8A977CAF5681}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DD5DAC2-EDD4-4A30-B3DC-8A977CAF5681}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DD5DAC2-EDD4-4A30-B3DC-8A977CAF5681}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DD5DAC2-EDD4-4A30-B3DC-8A977CAF5681}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

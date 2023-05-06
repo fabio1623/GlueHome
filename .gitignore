@@ -18,3 +18,11 @@ DeliverySolution/DeliveryDomain/obj/
 DeliverySolution/DeliveryInfrastructure/bin/
 
 DeliverySolution/DeliveryInfrastructure/obj/
+
+DeliverySolution/Tests/DeliveryApiTests/bin/
+
+DeliverySolution/Tests/DeliveryApiTests/obj/
+
+DeliverySolution/Tests/DeliveryDomainTests/bin/
+
+DeliverySolution/Tests/DeliveryDomainTests/obj/

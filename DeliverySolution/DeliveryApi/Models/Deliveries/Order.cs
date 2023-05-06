@@ -28,14 +28,14 @@ public class Order
     }
 }
 
-public class OrderValidator : AbstractValidator<Order>
+public class OrderValidator : AbstractValidator<Order?>
 {
     public OrderValidator()
     {
-        RuleFor(x => x.OrderNumber)
+        RuleFor(x => x!.OrderNumber)
             .NotEmpty();
 
-        RuleFor(x => x.Sender)
+        RuleFor(x => x!.Sender)
             .NotEmpty();
     }
 }

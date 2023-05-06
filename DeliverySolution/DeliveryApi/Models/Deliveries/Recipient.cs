@@ -34,21 +34,21 @@ public class Recipient
     }
 }
 
-public class RecipientValidation : AbstractValidator<Recipient>
+public class RecipientValidation : AbstractValidator<Recipient?>
 {
     public RecipientValidation()
     {
-        RuleFor(x => x.Name)
+        RuleFor(x => x!.Name)
             .NotEmpty();
         
-        RuleFor(x => x.Address)
+        RuleFor(x => x!.Address)
             .NotEmpty();
         
-        RuleFor(x => x.Email)
+        RuleFor(x => x!.Email)
             .NotEmpty()
             .EmailAddress();
 
-        RuleFor(x => x.Email)
+        RuleFor(x => x!.Email)
             .NotEmpty();
     }
 }

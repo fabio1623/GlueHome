@@ -20,18 +20,18 @@ public class CreateDelivery
     }
 }
 
-public class CreateDeliveryValidator : AbstractValidator<CreateDelivery>
+public class CreateDeliveryValidator : AbstractValidator<CreateDelivery?>
 {
     public CreateDeliveryValidator()
     {
-        RuleFor(x => x.EndTime)
+        RuleFor(x => x!.EndTime)
             .NotEmpty()
             .GreaterThan(DateTime.UtcNow);
 
-        RuleFor(x => x.Recipient)
+        RuleFor(x => x!.Recipient)
             .SetValidator(new RecipientValidation());
         
-        RuleFor(x => x.Order)
+        RuleFor(x => x!.Order)
             .SetValidator(new OrderValidator());
     }
 }
