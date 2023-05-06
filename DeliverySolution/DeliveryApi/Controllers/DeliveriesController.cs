@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace DeliveryApi.Controllers;
 
-[Authorize(Role.Partner, Role.User)]
+[Authorize]
 public class DeliveriesController : ControllerExtensions
 {
     private readonly IDeliveryBusiness _deliveryBusiness;
@@ -17,6 +17,7 @@ public class DeliveriesController : ControllerExtensions
         _deliveryBusiness = deliveryBusiness;
     }
     
+    [Authorize(Role.User, Role.Partner)]
     [HttpPost("[action]")]
     [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Post))]
     public async Task<IActionResult> Create(CreateDelivery createDelivery, CancellationToken cancellationToken)
@@ -27,6 +28,7 @@ public class DeliveriesController : ControllerExtensions
         return NoContent();
     }
     
+    [Authorize(Role.User, Role.Partner)]
     [HttpGet("{orderNumber}")]
     [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
     public async Task<ActionResult<Delivery>> Get(string orderNumber, CancellationToken cancellationToken)
@@ -70,6 +72,7 @@ public class DeliveriesController : ControllerExtensions
         return NoContent();
     }
     
+    [Authorize(Role.User, Role.Partner)]
     [HttpPut("[action]/{orderNumber}")]
     [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
     public async Task<IActionResult> Cancel(string? orderNumber, CancellationToken cancellationToken)

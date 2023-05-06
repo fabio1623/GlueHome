@@ -6,7 +6,6 @@ await WebApplication
     .ConfigureServiceCollection()
     .Build()
     .ConfigureWebApplication()
-    .SeedUsers()
     .ConfigureMySqlDatabase()
     .Result
     .RunAsync();

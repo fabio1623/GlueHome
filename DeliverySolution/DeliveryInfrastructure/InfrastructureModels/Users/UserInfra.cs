@@ -9,13 +9,18 @@ public class UserInfra
     public string? FirstName { get; init; }
     public string? LastName { get; init; }
     public string? Username { get; init; }
-    public RoleInfra? RoleInfra { get; set; }
+    public string? Role { get; set; }
     public string? PasswordHash { get; init; }
+
+    public UserInfra()
+    {
+        
+    }
 
     public UserDomain ToDomain()
     {
-        if (!Enum.TryParse<RoleDomain>(RoleInfra.ToString(), true, out var parsedRoleDomain))
-            throw new InfrastructureException($"Could not parse RoleInfra '{RoleInfra.ToString()}'");
+        if (!Enum.TryParse<RoleDomain>(Role, true, out var parsedRoleDomain))
+            throw new InfrastructureException($"Could not parse Role '{Role}'.");
             
         return new UserDomain
         {
@@ -26,5 +31,15 @@ public class UserInfra
             RoleDomain = parsedRoleDomain,
             PasswordHash = PasswordHash
         };
+    }
+
+    public UserInfra(UserDomain? userDomain)
+    {
+        Id = userDomain?.Id;
+        FirstName = userDomain?.FirstName;
+        LastName = userDomain?.LastName;
+        Username = userDomain?.Username;
+        Role = userDomain?.RoleDomain?.ToString();
+        PasswordHash = userDomain?.PasswordHash;
     }
 }

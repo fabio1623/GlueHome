@@ -4,7 +4,7 @@ namespace DeliveryDomain.Interfaces.Businesses;
 
 public interface IUserBusiness
 {
-    AuthenticateResponseDomain? Authenticate(AuthenticateRequestDomain? authenticateRequestDomain);
-    IEnumerable<UserDomain>? GetAll();
-    UserDomain? GetById(int? userId);
+    Task<AuthenticateResponseDomain?> Authenticate(AuthenticateRequestDomain? authenticateRequestDomain);
+    Task<IEnumerable<UserDomain>?> GetAll();
+    Task<UserDomain?> GetById(int? userId);
 }

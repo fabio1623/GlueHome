@@ -8,29 +8,29 @@ namespace DeliveryDomain.Businesses;
 
 public class DeliveryBusiness : IDeliveryBusiness
 {
-    private readonly IMySqlService _mySqlService;
+    private readonly IDeliveryService _deliveryService;
     private readonly IRabbitMqService _rabbitMqService;
 
-    public DeliveryBusiness(IMySqlService mySqlService, IRabbitMqService rabbitMqService)
+    public DeliveryBusiness(IDeliveryService deliveryService, IRabbitMqService rabbitMqService)
     {
-        _mySqlService = mySqlService;
+        _deliveryService = deliveryService;
         _rabbitMqService = rabbitMqService;
     }
 
     public async Task Create(CreateDeliveryDomain? deliveryDomain, CancellationToken cancellationToken)
     {
-        await _mySqlService.Create(deliveryDomain, cancellationToken);
+        await _deliveryService.Create(deliveryDomain, cancellationToken);
         await ProduceDeliveryCreated(deliveryDomain?.Order?.OrderNumber);
     }
 
     public async Task<DomainModels.Deliveries.DeliveryDomain?> Get(string? orderNumber, CancellationToken cancellationToken)
     {
-        return await _mySqlService.Get(orderNumber, cancellationToken);
+        return await _deliveryService.Get(orderNumber, cancellationToken);
     }
 
     public async Task Approve(string? orderNumber, CancellationToken cancellationToken)
     {
-        var delivery = await _mySqlService.Get(orderNumber, cancellationToken);
+        var delivery = await _deliveryService.Get(orderNumber, cancellationToken);
         if (delivery?.State != StateDomain.Created)
             throw new DomainException($"Order '{orderNumber}' cannot be approved because it is not in '{nameof(StateDomain.Created)}' state. Current state : {delivery?.State}.");
         
@@ -38,13 +38,13 @@ public class DeliveryBusiness : IDeliveryBusiness
         {
             State = StateDomain.Approved
         };
-        await _mySqlService.Update(orderNumber, deliveryUpdateDomain, cancellationToken);
+        await _deliveryService.Update(orderNumber, deliveryUpdateDomain, cancellationToken);
         await ProduceDeliveryUpdated(orderNumber, deliveryUpdateDomain.State);
     }
 
     public async Task Complete(string? orderNumber, CancellationToken cancellationToken)
     {
-        var delivery = await _mySqlService.Get(orderNumber, cancellationToken);
+        var delivery = await _deliveryService.Get(orderNumber, cancellationToken);
         if (delivery?.State != StateDomain.Approved)
             throw new DomainException($"Order '{orderNumber}' cannot be completed because it is not in '{nameof(StateDomain.Approved)}' state. Current state : {delivery?.State}.");
         
@@ -52,13 +52,13 @@ public class DeliveryBusiness : IDeliveryBusiness
         {
             State = StateDomain.Completed
         };
-        await _mySqlService.Update(orderNumber, deliveryUpdateDomain, cancellationToken);
+        await _deliveryService.Update(orderNumber, deliveryUpdateDomain, cancellationToken);
         await ProduceDeliveryUpdated(orderNumber, deliveryUpdateDomain.State);
     }
 
     public async Task Cancel(string? orderNumber, CancellationToken cancellationToken)
     {
-        var delivery = await _mySqlService.Get(orderNumber, cancellationToken);
+        var delivery = await _deliveryService.Get(orderNumber, cancellationToken);
         if (delivery?.State != StateDomain.Created && delivery?.State != StateDomain.Approved)
             throw new DomainException($"Order '{orderNumber}' cannot be cancelled because it is not in '{nameof(StateDomain.Created)}' or '{nameof(StateDomain.Approved)}' state. Current state : {delivery?.State}.");
         
@@ -66,17 +66,17 @@ public class DeliveryBusiness : IDeliveryBusiness
         {
             State = StateDomain.Cancelled
         };
-        await _mySqlService.Update(orderNumber, deliveryUpdateDomain, cancellationToken);
+        await _deliveryService.Update(orderNumber, deliveryUpdateDomain, cancellationToken);
         await ProduceDeliveryUpdated(orderNumber, deliveryUpdateDomain.State);
     }
 
     public async Task Delete(string? orderNumber, CancellationToken cancellationToken)
     {
-        var delivery = await _mySqlService.Get(orderNumber, cancellationToken);
+        var delivery = await _deliveryService.Get(orderNumber, cancellationToken);
         if (delivery == null)
             throw new DomainException($"Order '{orderNumber}' does not exist.");
         
-        await _mySqlService.Delete(orderNumber, cancellationToken);
+        await _deliveryService.Delete(orderNumber, cancellationToken);
         await ProduceDeliveryDeleted(orderNumber);
     }
     

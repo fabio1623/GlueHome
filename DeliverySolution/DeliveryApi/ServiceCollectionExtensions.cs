@@ -5,7 +5,6 @@ using DeliveryDomain.Businesses;
 using DeliveryDomain.Interfaces.Businesses;
 using DeliveryDomain.Interfaces.Configurations;
 using DeliveryDomain.Interfaces.Services;
-using DeliveryInfrastructure;
 using DeliveryInfrastructure.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -28,7 +27,6 @@ public static class ServiceCollectionExtensions
             .AddConfigurations(configurationManager)
             .AddFluentValidationConfigurations()
             .AddRabbitMqConfigurations(configurationManager)
-            .AddDataContext()
             .AddBusinesses()
             .AddServices()
             .AddEndpointsApiExplorer()
@@ -82,13 +80,6 @@ public static class ServiceCollectionExtensions
             })
             .AddSingleton<IRabbitMqService,RabbitMqService>();
     }
-
-    private static IServiceCollection AddDataContext(this IServiceCollection services)
-    {
-        return services
-            .AddSingleton<IUserDataContext, UserDataContext>()
-            .AddSingleton<IDataContext, DataContext>();
-    }
     
     private static IServiceCollection AddBusinesses(this IServiceCollection services)
     {
@@ -100,10 +91,11 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
         return services
-            .AddSingleton<IMySqlService, MySqlService>()
+            .AddSingleton<IDeliveryService, DeliveryService>()
             .AddSingleton<IRabbitMqService, RabbitMqService>()
             .AddSingleton<IJwtUtils, JwtUtils>()
-            .AddScoped<IUserService, UserService>();
+            .AddScoped<IUserService, UserService>()
+            .AddSingleton<IMySqlInitializer, MySqlInitializer>();
     }
     
     private static IServiceCollection AddSwagger(this IServiceCollection services)

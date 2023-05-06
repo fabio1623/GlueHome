@@ -1,5 +1,3 @@
-using DeliveryDomain.DomainModels.Deliveries;
-
 namespace DeliveryDomain.DomainModels.RabbitMqMessages;
 
 public class DeliveryUpdatedMessage

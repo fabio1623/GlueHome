@@ -19,9 +19,9 @@ public class UserBusiness : IUserBusiness
         _logger = logger;
     }
     
-    public AuthenticateResponseDomain? Authenticate(AuthenticateRequestDomain? authenticateRequestDomain)
+    public async Task<AuthenticateResponseDomain?> Authenticate(AuthenticateRequestDomain? authenticateRequestDomain)
     {
-        var user = _userService.GetByUsername(authenticateRequestDomain?.Username);
+        var user = await _userService.GetByUsername(authenticateRequestDomain?.Username);
         
         // validate
         if (user == null || !BCryptNet.Verify(authenticateRequestDomain?.Password, user.PasswordHash))
@@ -39,13 +39,13 @@ public class UserBusiness : IUserBusiness
         return null;
     }
 
-    public IEnumerable<UserDomain>? GetAll()
+    public async Task<IEnumerable<UserDomain>?> GetAll()
     {
-        return _userService.GetAll();
+        return await _userService.GetAll();
     }
 
-    public UserDomain? GetById(int? userId)
+    public async Task<UserDomain?> GetById(int? userId)
     {
-        return _userService.GetById(userId);
+        return await _userService.GetById(userId);
     }
 }

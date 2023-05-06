@@ -22,7 +22,7 @@ public class DeliveryInfra
     public DeliveryInfra(CreateDeliveryDomain? createDeliveryDomain)
     {
         OrderNumber = createDeliveryDomain?.Order?.OrderNumber;
-        State = StateInfra.Created.ToString();
+        State = StateDomain.Created.ToString();
         Sender = createDeliveryDomain?.Order?.Sender;
         RecipientName = createDeliveryDomain?.Recipient?.Name;
         RecipientAddress = createDeliveryDomain?.Recipient?.Address;

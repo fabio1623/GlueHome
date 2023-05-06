@@ -4,7 +4,8 @@ namespace DeliveryDomain.Interfaces.Services;
 
 public interface IUserService
 {
-    UserDomain? GetByUsername(string? username);
-    IEnumerable<UserDomain>? GetAll();
-    UserDomain? GetById(int? id);
+    Task Create(UserDomain userDomain);
+    Task<UserDomain?> GetByUsername(string? username);
+    Task<IEnumerable<UserDomain>?> GetAll();
+    Task<UserDomain?> GetById(int? id);
 }

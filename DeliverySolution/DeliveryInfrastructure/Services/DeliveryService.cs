@@ -8,11 +8,11 @@ using MySql.Data.MySqlClient;
 
 namespace DeliveryInfrastructure.Services;
 
-public class MySqlService : IMySqlService
+public class DeliveryService : IDeliveryService
 {
     private readonly IMySqlConfiguration _mySqlConfiguration;
 
-    public MySqlService(IMySqlConfiguration mySqlConfiguration)
+    public DeliveryService(IMySqlConfiguration mySqlConfiguration)
     {
         _mySqlConfiguration = mySqlConfiguration;
     }
@@ -40,7 +40,7 @@ public class MySqlService : IMySqlService
         """;
         var deliveryInfra = await connection.QuerySingleOrDefaultAsync<DeliveryInfra>(sql, new { orderNumber });
 
-        return deliveryInfra.ToDomain();
+        return deliveryInfra?.ToDomain();
     }
 
     public async Task Update(string? orderNumber, DeliveryUpdateDomain? deliveryUpdateDomain, CancellationToken cancellationToken)

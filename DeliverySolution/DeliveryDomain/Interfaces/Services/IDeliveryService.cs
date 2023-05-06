@@ -2,7 +2,7 @@ using DeliveryDomain.DomainModels.Deliveries;
 
 namespace DeliveryDomain.Interfaces.Services;
 
-public interface IMySqlService
+public interface IDeliveryService
 {
     Task Create(CreateDeliveryDomain? deliveryDomain, CancellationToken cancellationToken);
     Task<DomainModels.Deliveries.DeliveryDomain?> Get(string? orderNumber, CancellationToken cancellationToken);
