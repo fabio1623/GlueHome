@@ -6,8 +6,6 @@ namespace DeliveryInfrastructure.InfrastructureModels.Users;
 public class UserInfra
 {
     public int? Id { get; set; }
-    public string? FirstName { get; init; }
-    public string? LastName { get; init; }
     public string? Username { get; init; }
     public string? Role { get; set; }
     public string? PasswordHash { get; init; }
@@ -25,8 +23,6 @@ public class UserInfra
         return new UserDomain
         {
             Id = Id,
-            FirstName = FirstName,
-            LastName = LastName,
             Username = Username,
             RoleDomain = parsedRoleDomain,
             PasswordHash = PasswordHash
@@ -36,8 +32,6 @@ public class UserInfra
     public UserInfra(UserDomain? userDomain)
     {
         Id = userDomain?.Id;
-        FirstName = userDomain?.FirstName;
-        LastName = userDomain?.LastName;
         Username = userDomain?.Username;
         Role = userDomain?.RoleDomain?.ToString();
         PasswordHash = userDomain?.PasswordHash;

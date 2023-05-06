@@ -55,8 +55,6 @@ public class MySqlInitializer : IMySqlInitializer
 
                 CREATE TABLE IF NOT EXISTS users (
                     Id INT NOT NULL AUTO_INCREMENT,
-                    FirstName VARCHAR(255) NOT NULL,
-                    LastName VARCHAR(255) NOT NULL,
                     Username VARCHAR(255) NOT NULL UNIQUE,
                     Role ENUM('Admin', 'Partner', 'User') NOT NULL,
                     PasswordHash VARCHAR(255) NOT NULL,
@@ -71,15 +69,15 @@ public class MySqlInitializer : IMySqlInitializer
     {
         using var connection = CreateConnection();
         const string sql = @"
-            INSERT IGNORE INTO users (FirstName, LastName, Username, Role, PasswordHash)
-            VALUES (@FirstName, @LastName, @Username, @Role, @PasswordHash);
+            INSERT IGNORE INTO users (Username, Role, PasswordHash)
+            VALUES (@Username, @Role, @PasswordHash);
         ";
         
         var users = new List<UserInfra>
         {
-            new() { Id = 1, FirstName = "Admin", LastName = "User", Username = "admin", PasswordHash = BCryptNet.HashPassword("admin"), Role = RoleDomain.Admin.ToString() },
-            new() { Id = 2, FirstName = "Partner", LastName = "User", Username = "partner", PasswordHash = BCryptNet.HashPassword("partner"), Role = RoleDomain.Partner.ToString() },
-            new() { Id = 3, FirstName = "User", LastName = "User", Username = "user", PasswordHash = BCryptNet.HashPassword("user"), Role = RoleDomain.User.ToString() }
+            new() { Id = 1, Username = "admin", PasswordHash = BCryptNet.HashPassword("admin"), Role = RoleDomain.Admin.ToString() },
+            new() { Id = 2, Username = "partner", PasswordHash = BCryptNet.HashPassword("partner"), Role = RoleDomain.Partner.ToString() },
+            new() { Id = 3, Username = "user", PasswordHash = BCryptNet.HashPassword("user"), Role = RoleDomain.User.ToString() }
         };
 
         await connection.ExecuteAsync(sql, users);
