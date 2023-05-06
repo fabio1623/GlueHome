@@ -3,10 +3,6 @@ DeliverySolution/.idea/
 
 DeliverySolution/.vs/
 
-DeliverySolution/Delivery.API/bin/
-
-DeliverySolution/Delivery.API/obj/
-
 DeliverySolution/DeliveryApi/bin/
 
 DeliverySolution/DeliveryApi/obj/
@@ -19,10 +15,12 @@ DeliverySolution/DeliveryInfrastructure/bin/
 
 DeliverySolution/DeliveryInfrastructure/obj/
 
-DeliverySolution/Tests/DeliveryApiTests/bin/
-
 DeliverySolution/Tests/DeliveryApiTests/obj/
+
+DeliverySolution/Tests/DeliveryApiTests/bin/
 
 DeliverySolution/Tests/DeliveryDomainTests/bin/
 
 DeliverySolution/Tests/DeliveryDomainTests/obj/
+
+DeliverySolution/DeliverySolution.sln.DotSettings.user
