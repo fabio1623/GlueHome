@@ -170,7 +170,7 @@ public class DeliveryBusinessTests
             {
                 OrderNumber = orderNumber
             },
-            State = StateDomain.Cancelled
+            State = StateDomain.Created
         };
         _deliveryServiceMock.Setup(mock => mock.Get(orderNumber, CancellationToken.None)).ReturnsAsync(delivery);
 
