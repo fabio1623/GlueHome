@@ -21,9 +21,28 @@ services:
       - Serilog__MinimumLevel__Override__Microsoft=Information
       - Serilog__MinimumLevel__Override__System=Warning
       - Serilog__Properties__Application=delivery-api
-      - Serilog__AllowedHosts=*
+      - AllowedHosts=*
     ports:
       - "80:80"
+    
+  delivery.background:
+    environment:
+      - ElasticSearchConfiguration__ConnectionString=http://elasticsearch:9200
+
+      - MySqlConfiguration__Server=mysql
+      - MySqlConfiguration__DbName=delivery_db
+      - MySqlConfiguration__UserName=delivery_db_user
+      - MySqlConfiguration__Password=delivery_db_password
+
+      - RabbitMqConfiguration__HostName=rabbitmq
+      - RabbitMqConfiguration__UserName=guest
+      - RabbitMqConfiguration__Password=guest
+      - RabbitMqConfiguration__ExchangeName=delivery-exchange-expiry
+
+      - Serilog__MinimumLevel__Default=Information
+      - Serilog__MinimumLevel__Override__Microsoft=Information
+      - Serilog__MinimumLevel__Override__System=Warning
+      - Serilog__Properties__Application=delivery-background
   
   rabbitmq:
     environment:

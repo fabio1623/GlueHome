@@ -7,6 +7,13 @@ services:
       context: .
       dockerfile: DeliveryApi/Dockerfile
     restart: always
+    
+  delivery.background:
+    image: ${DOCKER_REGISTRY-}delivery.background
+    build:
+      context: .
+      dockerfile: DeliveryBackground/Dockerfile
+    restart: always
         
   rabbitmq:
     image: rabbitmq:3-management
