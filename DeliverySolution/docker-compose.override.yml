@@ -24,6 +24,7 @@ services:
       - AllowedHosts=*
     ports:
       - "80:80"
+      - "443:443"
     
   delivery.background:
     environment:
