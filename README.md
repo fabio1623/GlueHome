@@ -21,7 +21,7 @@ There are also two Unit Tests projects:
 - Open a terminal and navigate to the `DeliverySolution` directory.
 - Build the solution with the following command: ```docker-compose build```
 - Start the application by running: ```docker-compose up -d```
-- The Delivery API documentation can be accessed at `http://localhost:7145/swagger`
+- The Delivery API documentation can be accessed at `http://localhost:80/swagger/index.html`
 - To stop the application, run the following command: ```docker-compose down```
 
 The above command will start the application as well as all required services.
