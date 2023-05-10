@@ -33,6 +33,8 @@ The following three users are automatically generated to interact with different
 - `User` (username: user, password: user): create, get, approve, and cancel deliveries
 - `Partner` (username: partner, password: partner): create, get, complete, and cancel deliveries
 
+1000 deliveries will be randomly generated with different states.
+
 ## Available Endpoints
 
 To interact with the API endpoints, you can use tools like Postman or cURL. It uses a Bearer Token.

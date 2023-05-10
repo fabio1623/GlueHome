@@ -3,7 +3,9 @@ using Dapper;
 using DeliveryDomain.DomainModels.Users;
 using DeliveryDomain.Interfaces.Configurations;
 using DeliveryDomain.Interfaces.Services;
+using DeliveryInfrastructure.InfrastructureModels.Deliveries;
 using DeliveryInfrastructure.InfrastructureModels.Users;
+using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using BCryptNet = BCrypt.Net.BCrypt;
 
@@ -12,17 +14,27 @@ namespace DeliveryInfrastructure.Services;
 public class MySqlInitializer : IMySqlInitializer
 {
     private readonly IMySqlConfiguration _mySqlConfiguration;
+    private readonly ILogger<MySqlInitializer> _logger;
 
-    public MySqlInitializer(IMySqlConfiguration mySqlConfiguration)
+    public MySqlInitializer(IMySqlConfiguration mySqlConfiguration, ILogger<MySqlInitializer> logger)
     {
         _mySqlConfiguration = mySqlConfiguration;
+        _logger = logger;
     }
 
     public async Task InitializeMySql()
     {
         await InitializeDatabase();
+        _logger.LogInformation("Database initialization done.");
+        
         await InitializeTables();
+        _logger.LogInformation("Tables initialization done.");
+        
         await SeedUsers();
+        _logger.LogInformation("Users seed done.");
+        
+        await SeedDeliveries();
+        _logger.LogInformation("Deliveries seed done.");
     }
     
     private async Task InitializeDatabase()
@@ -81,6 +93,44 @@ public class MySqlInitializer : IMySqlInitializer
         };
 
         await connection.ExecuteAsync(sql, users);
+    }
+
+    private async Task SeedDeliveries()
+    {
+        using var connection = CreateConnection();
+        const string sql = @"
+            INSERT IGNORE INTO deliveries
+            VALUES  (@OrderNumber, @State, @Sender, @RecipientName, @RecipientAddress, @RecipientEmail, @RecipientPhoneNumber, @StartTime, @EndTime);
+        ";
+
+        var deliveries = new List<DeliveryInfra>();
+        var random = new Random();
+        var states = Enum.GetValues(typeof(StateInfra));
+
+        for (var i = 1; i <= 1000; i++)
+        {
+            var delivery = new DeliveryInfra
+            {
+                OrderNumber = "Order" + i,
+                State = states.GetValue(random.Next(states.Length))?.ToString(),
+                Sender = "Sender" + i,
+                RecipientName = "RecipientName" + i,
+                RecipientAddress = "RecipientAddress" + i,
+                RecipientEmail = "RecipientEmail" + i + "@example.com",
+                RecipientPhoneNumber = "RecipientPhoneNumber" + i,
+                StartTime = DateTime.UtcNow,
+                EndTime = DateTime.UtcNow.AddDays(i % 5 + 1)
+            };
+
+            if (delivery.State == "Expired" && DateTime.UtcNow < delivery.EndTime)
+            {
+                delivery.EndTime = DateTime.UtcNow.AddDays(-1);
+            }
+
+            deliveries.Add(delivery);
+        }
+        
+        await connection.ExecuteAsync(sql, deliveries);
     }
     
     private IDbConnection CreateConnection()

@@ -22,8 +22,13 @@ public class Worker : BackgroundService
         {
             _logger.LogInformation("Worker running at: {time}", DateTimeOffset.UtcNow);
             var orderNumbers = (await _deliveryService.GetExpiredDeliveries()).ToList();
-            await _deliveryService.ExpireDeliveries(orderNumbers);
-            await ProduceDeliveryExpiry(orderNumbers);
+            if (orderNumbers.Count > 0)
+            {
+                await _deliveryService.ExpireDeliveries(orderNumbers);
+                await ProduceDeliveryExpiry(orderNumbers);
+                _logger.LogInformation("'{count}' delivery(ies) set to 'Expired'.", orderNumbers.Count);
+            }
+            
             await Task.Delay(TimeSpan.FromHours(1), cancellationToken);
         }
     }
