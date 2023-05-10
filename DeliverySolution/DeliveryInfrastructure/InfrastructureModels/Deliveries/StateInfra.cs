@@ -1,4 +1,4 @@
-namespace DeliveryBackground.InfrastructureModels;
+namespace DeliveryInfrastructure.InfrastructureModels.Deliveries;
 
 public enum StateInfra
 {

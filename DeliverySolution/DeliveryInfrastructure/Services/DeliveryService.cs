@@ -69,6 +69,35 @@ public class DeliveryService : IDeliveryService
         await connection.ExecuteAsync(sql, new { orderNumber });
     }
     
+    public async Task<IEnumerable<string>> GetExpiredDeliveries()
+    {
+        using var connection = CreateConnection();
+        const string sql = """
+            SELECT orderNumber FROM deliveries 
+            WHERE EndTime < NOW() and State != @State
+        """;
+        
+        return await connection.QueryAsync<string>(sql, new { State = StateInfra.Expired.ToString() });
+    }
+
+    public async Task ExpireDeliveries(IEnumerable<string> orderNumbers)
+    {
+        using var connection = CreateConnection();
+        const string sql = """
+            UPDATE deliveries 
+            SET State = @State
+            WHERE OrderNumber IN @orderNumbers
+        """;
+        
+        var parameters = new
+        {
+            State = StateInfra.Expired.ToString(), 
+            OrderNumbers = orderNumbers
+        };
+        
+        await connection.ExecuteAsync(sql, parameters);
+    }
+    
     private IDbConnection CreateConnection()
     {
         var connectionString = $"Server={_mySqlConfiguration.Server}; Database={_mySqlConfiguration.DbName}; Uid={_mySqlConfiguration.UserName}; Pwd={_mySqlConfiguration.Password};";

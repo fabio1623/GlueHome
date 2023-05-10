@@ -1,3 +1,5 @@
+using DeliveryDomain.Interfaces.Configurations;
+
 namespace DeliveryBackground.Configurations;
 
 public class RabbitMqConfiguration : IRabbitMqConfiguration

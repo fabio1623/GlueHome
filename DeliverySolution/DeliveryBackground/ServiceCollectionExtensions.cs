@@ -1,5 +1,7 @@
 using DeliveryBackground.Configurations;
-using DeliveryBackground.Services;
+using DeliveryDomain.Interfaces.Configurations;
+using DeliveryDomain.Interfaces.Services;
+using DeliveryInfrastructure.Services;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
