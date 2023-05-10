@@ -78,3 +78,7 @@ The above command will start the test runners and run all the tests in the solut
 ## Conclusion
 
 The Delivery Solution is a containerized application that stores deliveries in MySQL and sends delivery updates to RabbitMQ. It provides a RESTful API to create, get, update, and delete deliveries. The solution also includes unit tests to ensure the business logic is working as expected.
+
+## License
+
+This project is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License. See the [LICENSE](http://creativecommons.org/licenses/by-nc-nd/4.0/?ref=chooser-v1) file for details.
