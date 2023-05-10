@@ -14,9 +14,9 @@ public static class ConfigureHostBuilderExtensions
         return webApplicationBuilder;
     }
 
-    private static IHostBuilder AddSerilog(this IHostBuilder hostBuilder)
+    private static void AddSerilog(this IHostBuilder hostBuilder)
     {
-        return hostBuilder
+        hostBuilder
             .UseSerilog((context, services, configuration) =>
                 configuration
                     .ReadFrom.Configuration(context.Configuration)
