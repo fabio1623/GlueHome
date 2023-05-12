@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace DeliveryApi.Controllers;
 
@@ -27,5 +28,15 @@ public abstract class ControllerExtensions : ControllerBase
         return Problem(
             title: exception?.Message,
             detail: exception?.StackTrace);
+    }
+    
+    protected static Task<ModelStateDictionary> ValidatePagination(params (string? fieldName, int? fieldValue)[] fields)
+    {
+        var modelStateDictionary = new ModelStateDictionary();
+        foreach (var (fieldName, fieldValue) in fields)
+            if (!string.IsNullOrWhiteSpace(fieldName) && fieldValue <= 0)
+                modelStateDictionary.AddModelError(fieldName, $"'{fieldName}' must be greater than '0'.");
+
+        return Task.FromResult(modelStateDictionary);
     }
 }

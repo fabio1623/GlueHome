@@ -1,4 +1,5 @@
-using DeliveryApi.Models.Users;
+using AutoMapper;
+using DeliveryApi.Models;
 using DeliveryDomain.Interfaces.Services;
 
 namespace DeliveryApi.Middlewares;
@@ -6,10 +7,12 @@ namespace DeliveryApi.Middlewares;
 public class JwtMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly IMapper _mapper;
 
-    public JwtMiddleware(RequestDelegate next)
+    public JwtMiddleware(RequestDelegate next, IMapper mapper)
     {
         _next = next;
+        _mapper = mapper;
     }
 
     public async Task Invoke(HttpContext context, IUserService userService, IJwtUtils jwtUtils)
@@ -21,9 +24,9 @@ public class JwtMiddleware
             if (userId != null)
             {
                 // attach user to context on successful jwt validation
-                var userDomain = await userService.GetById(userId.Value);
+                var userDomain = await userService.Get(userId, CancellationToken.None);
                 if (userDomain != null)
-                    context.Items["User"] = new User(userDomain);
+                    context.Items["User"] = _mapper.Map<User>(userDomain);
             }
         }
 

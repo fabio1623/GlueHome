@@ -1,72 +1,58 @@
-using System.Data;
-using Dapper;
+using AutoMapper;
+using DeliveryDomain.DomainEnums;
+using DeliveryDomain.DomainModels;
 using DeliveryDomain.DomainModels.Users;
 using DeliveryDomain.Interfaces.Configurations;
 using DeliveryDomain.Interfaces.Services;
-using DeliveryInfrastructure.InfrastructureModels.Users;
-using MySql.Data.MySqlClient;
+using DeliveryInfrastructure.Enums;
+using DeliveryInfrastructure.Exceptions;
+using DeliveryInfrastructure.InfrastructureModels;
+using MongoDB.Driver;
 
 namespace DeliveryInfrastructure.Services;
 
-public class UserService : IUserService
+public class UserService : BaseMongoDbService<UserDomain, CreateUserRequestDomain, UpdateUserRequestDomain, UserInfra>, IUserService
 {
-    private readonly IMySqlConfiguration _mySqlConfiguration;
-
-    public UserService(IMySqlConfiguration mySqlConfiguration)
+    protected override string? CollectionName => "Users";
+    
+    public UserService(IMongoDbConfiguration mongoDbConfiguration, IMapper mapper) : base(mongoDbConfiguration, mapper)
     {
-        _mySqlConfiguration = mySqlConfiguration;
     }
-
-    public async Task Create(UserDomain userDomain)
+    protected override CreateIndexModel<UserInfra> GetCreateIndexModel()
     {
-        using var connection = CreateConnection();
-        const string sql = """
-            INSERT INTO users (FirstName, LastName, Username, Role, PasswordHash)
-            VALUES (@FirstName, @LastName, @Username, @Role, @PasswordHash)
-        """;
+        var indexKeysDefinition = Builders<UserInfra>
+            .IndexKeys
+            .Ascending(x => x.Username);
 
-        var userInfra = new UserInfra(userDomain);
+        var createIndexOptions = new CreateIndexOptions { Unique = true };
         
-        await connection.ExecuteAsync(sql, userInfra);
+        return new CreateIndexModel<UserInfra>(indexKeysDefinition, createIndexOptions);
     }
 
-    public async Task<UserDomain?> GetByUsername(string? username)
+    protected override UpdateDefinition<UserInfra> GetUpdateDefinition(UpdateUserRequestDomain? domainModelUpdate)
     {
-        using var connection = CreateConnection();
-        const string sql = """
-            SELECT * FROM users 
-            WHERE Username = @Username
-        """;
-        var userInfra = await connection.QuerySingleOrDefaultAsync<UserInfra>(sql, new { username });
+        var mappedRoleInfra = Mapper.Map<RoleInfra?>(domainModelUpdate?.RoleDomain);
+        if (mappedRoleInfra == null)
+            throw new InfrastructureException($"Could not parse {nameof(RoleDomain)} '{domainModelUpdate?.RoleDomain?.ToString()}'.");
+        
+        var currentDateTime = DateTime.UtcNow;
 
-        return userInfra?.ToDomain();
+        return Builders<UserInfra>
+            .Update
+            .Set(x => x.Role, mappedRoleInfra)
+            .Set(x => x.UpdatedAt, currentDateTime);
     }
 
-    public async Task<IEnumerable<UserDomain>?> GetAll()
+    public async Task<UserDomain?> GetByUsername(string? username, CancellationToken cancellationToken)
     {
-        using var connection = CreateConnection();
-        const string sql = """
-            SELECT * FROM users
-        """;
-        var users= await connection.QueryAsync<UserInfra>(sql);
-        return users?.Select(x => x.ToDomain());
-    }
-
-    public async Task<UserDomain?> GetById(int? id) 
-    {
-        using var connection = CreateConnection();
-        const string sql = """
-            SELECT * FROM users 
-            WHERE Id = @Id
-        """;
-        var userInfra = await connection.QuerySingleOrDefaultAsync<UserInfra>(sql, new { id });
-
-        return userInfra?.ToDomain();
+        var filterDefinition = GetUsernameFilterDefinition(username);
+        return await FindOne(filterDefinition, cancellationToken);
     }
     
-    private IDbConnection CreateConnection()
+    private static FilterDefinition<UserInfra> GetUsernameFilterDefinition(string? username)
     {
-        var connectionString = $"Server={_mySqlConfiguration.Server}; Database={_mySqlConfiguration.DbName}; Uid={_mySqlConfiguration.UserName}; Pwd={_mySqlConfiguration.Password};";
-        return new MySqlConnection(connectionString);
+        return Builders<UserInfra>
+            .Filter
+            .Eq(x => x.Username, username);
     }
 }

@@ -6,6 +6,6 @@ await WebApplication
     .ConfigureServiceCollection()
     .Build()
     .ConfigureWebApplication()
-    .ConfigureMySqlDatabase()
+    .ConfigureDatabase()
     .Result
     .RunAsync();

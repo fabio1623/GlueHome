@@ -28,3 +28,7 @@ DeliverySolution/DeliverySolution.sln.DotSettings.user
 DeliverySolution/DeliveryBackground/obj/
 
 DeliverySolution/DeliveryBackground/bin/
+
+DeliverySolution/Tests/DeliveryInfrastructureTests/bin/
+
+DeliverySolution/Tests/DeliveryInfrastructureTests/obj/

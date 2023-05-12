@@ -1,7 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using DeliveryDomain.DomainModels.Users;
+using DeliveryDomain.DomainModels;
 using DeliveryDomain.Interfaces.Configurations;
 using DeliveryDomain.Interfaces.Services;
 using Microsoft.Extensions.Logging;
@@ -32,10 +32,10 @@ public class JwtUtils : IJwtUtils
 
     public string? GenerateJwtToken(UserDomain? user)
     {
-        var userId = user?.Id?.ToString();
+        var userId = user?.Id;
         if (string.IsNullOrWhiteSpace(userId))
         {
-            _logger.LogWarning($"'{nameof(user.Id)}' is not set.");
+            _logger.LogWarning($"'{nameof(user.Id)} from {nameof(UserDomain)}' is not set.");
             return string.Empty;
         }
 
@@ -53,7 +53,7 @@ public class JwtUtils : IJwtUtils
         return tokenHandler.WriteToken(token);
     }
 
-    public int? ValidateJwtToken(string? token)
+    public string? ValidateJwtToken(string? token)
     {
         if (token == null)
             return null;
@@ -72,7 +72,7 @@ public class JwtUtils : IJwtUtils
             }, out var validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
-            var userId = int.Parse(jwtToken.Claims.First(x => x.Type == UserIdClaimType).Value);
+            var userId = jwtToken.Claims.FirstOrDefault(x => x.Type == UserIdClaimType)?.Value;
 
             // return user id from JWT token if validation successful
             return userId;

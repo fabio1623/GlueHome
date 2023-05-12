@@ -1,13 +1,15 @@
+using DeliveryDomain.DomainModels;
 using DeliveryDomain.DomainModels.Deliveries;
 
 namespace DeliveryDomain.Interfaces.Businesses;
 
 public interface IDeliveryBusiness
 {
-    Task Create(CreateDeliveryDomain? deliveryDomain, CancellationToken cancellationToken);
-    Task<DomainModels.Deliveries.DeliveryDomain?> Get(string? orderNumber, CancellationToken cancellationToken);
-    Task Approve(string? orderNumber, CancellationToken cancellationToken);
-    Task Complete(string? orderNumber, CancellationToken cancellationToken);
-    Task Cancel(string? orderNumber, CancellationToken cancellationToken);
-    Task Delete(string? orderNumber, CancellationToken cancellationToken);
+    Task Create(CreateDeliveryRequestDomain? deliveryDomain, CancellationToken cancellationToken);
+    Task<PagedListDomain<DomainModels.DeliveryDomain?>> GetPaged(int? requestedPage, int? pageSize, CancellationToken cancellationToken);
+    Task<DomainModels.DeliveryDomain?> Get(string? deliveryId, CancellationToken cancellationToken);
+    Task Approve(string? deliveryId, CancellationToken cancellationToken);
+    Task Complete(string? deliveryId, CancellationToken cancellationToken);
+    Task Cancel(string? deliveryId, CancellationToken cancellationToken);
+    Task Delete(string? deliveryId, CancellationToken cancellationToken);
 }

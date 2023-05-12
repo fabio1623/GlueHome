@@ -1,11 +1,9 @@
+using DeliveryDomain.DomainModels;
 using DeliveryDomain.DomainModels.Users;
 
 namespace DeliveryDomain.Interfaces.Services;
 
-public interface IUserService
+public interface IUserService : IBaseMongoDbService<UserDomain, CreateUserRequestDomain, UpdateUserRequestDomain>
 {
-    Task Create(UserDomain userDomain);
-    Task<UserDomain?> GetByUsername(string? username);
-    Task<IEnumerable<UserDomain>?> GetAll();
-    Task<UserDomain?> GetById(int? id);
+    Task<UserDomain?> GetByUsername(string? username, CancellationToken cancellationToken);
 }

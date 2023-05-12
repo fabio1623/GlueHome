@@ -1,18 +1,15 @@
-using DeliveryBackground.RabbitMqMessages;
-using DeliveryDomain.Interfaces.Services;
+using DeliveryDomain.Interfaces.Initializers;
 
 namespace DeliveryBackground;
 
 public class Worker : BackgroundService
 {
-    private readonly IDeliveryService _deliveryService;
-    private readonly IRabbitMqService _rabbitMqService;
+    private readonly IDeliveriesInitializer _deliveriesInitializer;
     private readonly ILogger<Worker> _logger;
 
-    public Worker(IDeliveryService deliveryService, IRabbitMqService rabbitMqService, ILogger<Worker> logger)
+    public Worker(IDeliveriesInitializer deliveriesInitializer, ILogger<Worker> logger)
     {
-        _deliveryService = deliveryService;
-        _rabbitMqService = rabbitMqService;
+        _deliveriesInitializer = deliveriesInitializer;
         _logger = logger;
     }
 
@@ -21,24 +18,13 @@ public class Worker : BackgroundService
         while (!cancellationToken.IsCancellationRequested)
         {
             _logger.LogInformation("Worker running at: {time}", DateTimeOffset.UtcNow);
-            var orderNumbers = (await _deliveryService.GetExpiredDeliveries()).ToList();
-            if (orderNumbers.Count > 0)
-            {
-                await _deliveryService.ExpireDeliveries(orderNumbers);
-                await ProduceDeliveryExpiry(orderNumbers);
-                _logger.LogInformation("'{count}' delivery(ies) set to 'Expired'.", orderNumbers.Count);
-            }
             
-            await Task.Delay(TimeSpan.FromHours(1), cancellationToken);
+            await _deliveriesInitializer.ExpireDeliveries(cancellationToken);
+            
+            var delay = TimeSpan.FromSeconds(30);
+            _logger.LogInformation("Worker finished at: {time}. Waiting {delay}min.", DateTimeOffset.UtcNow, delay.TotalMinutes);
+            
+            await Task.Delay(delay, cancellationToken);
         }
-    }
-
-    private async Task ProduceDeliveryExpiry(IEnumerable<string> orderNumbers)
-    {
-        var deliveriesExpiredMessage = new DeliveriesExpiredMessage
-        {
-            OrderNumbers = orderNumbers
-        };
-        await _rabbitMqService.ProduceMessage(deliveriesExpiredMessage);
     }
 }

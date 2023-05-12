@@ -7,6 +7,7 @@ await Host.CreateDefaultBuilder(args)
         var configuration = hostBuilderContext.Configuration;
         serviceCollection
             .AddConfigurations(configuration)
+            .AddAutoMapperProfiles()
             .AddRabbitMqConfigurations(configuration)
             .AddServices()
             .AddHostedService<Worker>();

@@ -1,5 +1,9 @@
+using AutoMapper;
 using DeliveryApi.Attributes;
+using DeliveryApi.Enums;
+using DeliveryApi.Models;
 using DeliveryApi.Models.Users;
+using DeliveryDomain.DomainModels.Users;
 using DeliveryDomain.Interfaces.Businesses;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,42 +13,43 @@ namespace DeliveryApi.Controllers;
 public class UsersController : ControllerExtensions
 {
     private readonly IUserBusiness _userBusiness;
+    private readonly IMapper _mapper;
 
-    public UsersController(IUserBusiness userBusiness)
+    public UsersController(IUserBusiness userBusiness, IMapper mapper)
     {
         _userBusiness = userBusiness;
+        _mapper = mapper;
     }
 
     [AllowAnonymous]
     [HttpPost("[action]")]
     [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Post))]
-    public async Task<ActionResult<AuthenticateResponse>> Authenticate(AuthenticateRequest model)
+    public async Task<ActionResult<AuthenticateUserResponse?>> Authenticate(AuthenticateUserRequest? request, CancellationToken cancellationToken)
     {
-        var authenticateRequestDomain = model.ToDomainModel();
-        var authenticateResponseDomain = await _userBusiness.Authenticate(authenticateRequestDomain);
+        var requestDomain = _mapper.Map<AuthenticateUserRequestDomain>(request);
+        var responseDomain = await _userBusiness.Authenticate(requestDomain, cancellationToken);
         
-        return authenticateResponseDomain == null
+        return responseDomain == null
             ? Problem("Could not authenticate user.")
-            : new AuthenticateResponse(authenticateResponseDomain);
+            : _mapper.Map<AuthenticateUserResponse?>(responseDomain);
     }
 
     [HttpGet]
     [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
-    public async Task<ActionResult<IEnumerable<User>?>> GetAll()
+    public async Task<ActionResult<IEnumerable<User>?>> GetPaged(int? requestedPage, int? pageSize, CancellationToken cancellationToken)
     {
-        var userDomainList = await _userBusiness.GetAll();
-        var users = userDomainList?.Select(x => new User(x));
-        return users?.ToList();
+        var userDomainList = await _userBusiness.GetPaged(requestedPage, pageSize, cancellationToken);
+        return _mapper.Map<IEnumerable<User>?>(userDomainList)?.ToList();
     }
 
-    [HttpGet("{userId:int}")]
+    [HttpGet("{userId}")]
     [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
-    public async Task<ActionResult<User>> Get(int userId)
+    public async Task<ActionResult<User?>> Get(string? userId, CancellationToken cancellationToken)
     {
-        var userDomain = await _userBusiness.GetById(userId);
+        var userDomain = await _userBusiness.Get(userId, cancellationToken);
         
         return userDomain == null ?
             NotFoundProblem($"User '{userId}' does not exist.", type : nameof(DeliveriesController)) :
-            new User(userDomain);
+            _mapper.Map<User?>(userDomain);
     }
 }

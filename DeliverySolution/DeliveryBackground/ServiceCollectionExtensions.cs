@@ -1,6 +1,9 @@
 using DeliveryBackground.Configurations;
 using DeliveryDomain.Interfaces.Configurations;
+using DeliveryDomain.Interfaces.Initializers;
 using DeliveryDomain.Interfaces.Services;
+using DeliveryInfrastructure.AutoMapperProfiles;
+using DeliveryInfrastructure.Initializers;
 using DeliveryInfrastructure.Services;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
@@ -14,7 +17,14 @@ public static class ServiceCollectionExtensions
         return services
             .RegisterConfiguration<IElasticSearchConfiguration, ElasticSearchConfiguration>(configuration)
             .RegisterConfiguration<IMySqlConfiguration, MySqlConfiguration>(configuration)
-            .RegisterConfiguration<IRabbitMqConfiguration, RabbitMqConfiguration>(configuration);
+            .RegisterConfiguration<IRabbitMqConfiguration, RabbitMqConfiguration>(configuration)
+            .RegisterConfiguration<IMongoDbConfiguration, MongoDbConfiguration>(configuration);
+    }
+    
+    public static IServiceCollection AddAutoMapperProfiles(this IServiceCollection services)
+    {
+        return services
+            .AddAutoMapper(typeof(InfrastructureModelProfiles));
     }
 
     public static IServiceCollection AddRabbitMqConfigurations(this IServiceCollection services, IConfiguration configuration)
@@ -33,7 +43,8 @@ public static class ServiceCollectionExtensions
     {
         return services
             .AddSingleton<IDeliveryService, DeliveryService>()
-            .AddSingleton<IRabbitMqService, RabbitMqService>();
+            .AddSingleton<IRabbitMqService, RabbitMqService>()
+            .AddSingleton<IDeliveriesInitializer, DeliveriesInitializer>();
     }
     
     private static IServiceCollection RegisterConfiguration<TConfigurationInterface, TConfigurationClass>(

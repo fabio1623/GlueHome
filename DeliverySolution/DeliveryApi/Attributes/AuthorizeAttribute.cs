@@ -1,4 +1,5 @@
-using DeliveryApi.Models.Users;
+using DeliveryApi.Enums;
+using DeliveryApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

@@ -30,3 +30,11 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:7.17.0
     restart: always
+    
+  mongodb:
+    image: mongo
+    restart: always
+    
+  mongo-express:
+    image: mongo-express
+    restart: always

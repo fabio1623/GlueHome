@@ -1,6 +1,8 @@
 using DeliveryDomain.Businesses;
+using DeliveryDomain.DomainEnums;
+using DeliveryDomain.DomainModels;
+using DeliveryDomain.DomainModels.BrokerMessages;
 using DeliveryDomain.DomainModels.Deliveries;
-using DeliveryDomain.DomainModels.RabbitMqMessages;
 using DeliveryDomain.Exceptions;
 using DeliveryDomain.Interfaces.Services;
 using Moq;
@@ -10,9 +12,10 @@ namespace DeliveryDomainTests;
 [TestFixture]
 public class DeliveryBusinessTests
 {
-    private Mock<IDeliveryService> _deliveryServiceMock;
-    private Mock<IRabbitMqService> _rabbitMqServiceMock;
-    private DeliveryBusiness _deliveryBusiness;
+    private Mock<IDeliveryService> _deliveryServiceMock = null!;
+    private Mock<IRabbitMqService> _rabbitMqServiceMock = null!;
+    
+    private DeliveryBusiness _deliveryBusiness = null!;
 
     [SetUp]
     public void Setup()
@@ -26,9 +29,9 @@ public class DeliveryBusinessTests
     public async Task Create_Successful()
     {
         // Arrange
-        var deliveryDomain = new CreateDeliveryDomain
+        var deliveryDomain = new CreateDeliveryRequestDomain
         {
-            Order = new OrderDomain
+            Order = new CreateDeliveryRequestDomain.CreateDeliveryOrderDomain
             {
                 OrderNumber = "1234"
             }
@@ -43,13 +46,51 @@ public class DeliveryBusinessTests
     }
     
     [Test]
+    public async Task GetPaged_Successful()
+    {
+        // Arrange
+        const int requestedPage = 1;
+        const int pageSize = 1;
+        const string orderNumber = "1234";
+        
+        var pagedList = new PagedListDomain<DeliveryDomain.DomainModels.DeliveryDomain?>
+        {
+            CurrentPage = requestedPage,
+            TotalPages = 1,
+            TotalResults = 1,
+            Results = new List<DeliveryDomain.DomainModels.DeliveryDomain?>
+            {
+                new()
+                {
+                    Order = new DeliveryDomain.DomainModels.DeliveryDomain.DeliveryOrderDomain
+                    {
+                        OrderNumber = orderNumber
+                    },
+                    State = StateDomain.Created
+                }
+            }
+        };
+
+        _deliveryServiceMock
+            .Setup(mock => mock.GetPaged(requestedPage, pageSize, CancellationToken.None))
+            .ReturnsAsync(pagedList);
+
+        // Act
+        var result = await _deliveryBusiness.GetPaged(requestedPage, pageSize, CancellationToken.None);
+
+        // Assert
+        Assert.That(result, Is.EqualTo(pagedList));
+        _deliveryServiceMock.Verify(mock => mock.GetPaged(requestedPage, pageSize, CancellationToken.None), Times.Once);
+    }
+    
+    [Test]
     public async Task Get_Successful()
     {
         // Arrange
         const string orderNumber = "1234";
-        var delivery = new DeliveryDomain.DomainModels.Deliveries.DeliveryDomain
+        var delivery = new DeliveryDomain.DomainModels.DeliveryDomain
         {
-            Order = new OrderDomain
+            Order = new DeliveryDomain.DomainModels.DeliveryDomain.DeliveryOrderDomain
             {
                 OrderNumber = orderNumber
             },
@@ -72,9 +113,9 @@ public class DeliveryBusinessTests
     {
         // Arrange
         const string orderNumber = "1234";
-        var delivery = new DeliveryDomain.DomainModels.Deliveries.DeliveryDomain
+        var delivery = new DeliveryDomain.DomainModels.DeliveryDomain
         {
-            Order = new OrderDomain
+            Order = new DeliveryDomain.DomainModels.DeliveryDomain.DeliveryOrderDomain
             {
                 OrderNumber = orderNumber
             },
@@ -86,7 +127,8 @@ public class DeliveryBusinessTests
         await _deliveryBusiness.Approve(orderNumber, CancellationToken.None);
 
         // Assert
-        _deliveryServiceMock.Verify(mock => mock.Update(orderNumber, It.Is<DeliveryUpdateDomain>(domain => domain.State == StateDomain.Approved), CancellationToken.None), Times.Once);
+        _deliveryServiceMock.Verify(mock => mock.Get(orderNumber, CancellationToken.None), Times.Once);
+        _deliveryServiceMock.Verify(mock => mock.Update(orderNumber, It.Is<UpdateDeliveryRequestDomain>(domain => domain.State == StateDomain.Approved), CancellationToken.None), Times.Once);
         _rabbitMqServiceMock.Verify(mock => mock.ProduceMessage(It.Is<DeliveryUpdatedMessage>(message => message.OrderNumber == orderNumber && message.NewState == StateDomain.Approved.ToString())), Times.Once);
     }
 
@@ -98,9 +140,9 @@ public class DeliveryBusinessTests
     {
         // Arrange
         const string orderNumber = "1234";
-        var delivery = new DeliveryDomain.DomainModels.Deliveries.DeliveryDomain
+        var delivery = new DeliveryDomain.DomainModels.DeliveryDomain
         {
-            Order = new OrderDomain
+            Order = new DeliveryDomain.DomainModels.DeliveryDomain.DeliveryOrderDomain
             {
                 OrderNumber = orderNumber
             },
@@ -110,6 +152,8 @@ public class DeliveryBusinessTests
 
         // Act and Assert
         Assert.ThrowsAsync<DomainException>(() => _deliveryBusiness.Approve(orderNumber, CancellationToken.None));
+        _deliveryServiceMock.Verify(mock => mock.Update(It.IsAny<string>(), It.IsAny<UpdateDeliveryRequestDomain>(), It.IsAny<CancellationToken>()), Times.Never);
+        _rabbitMqServiceMock.Verify(mock => mock.ProduceMessage(It.IsAny<DeliveryUpdatedMessage>()), Times.Never);
         return Task.CompletedTask;
     }
 
@@ -118,9 +162,9 @@ public class DeliveryBusinessTests
     {
         // Arrange
         const string orderNumber = "1234";
-        var delivery = new DeliveryDomain.DomainModels.Deliveries.DeliveryDomain
+        var delivery = new DeliveryDomain.DomainModels.DeliveryDomain
         {
-            Order = new OrderDomain
+            Order = new DeliveryDomain.DomainModels.DeliveryDomain.DeliveryOrderDomain
             {
                 OrderNumber = orderNumber
             },
@@ -132,7 +176,8 @@ public class DeliveryBusinessTests
         await _deliveryBusiness.Complete(orderNumber, CancellationToken.None);
 
         // Assert
-        _deliveryServiceMock.Verify(mock => mock.Update(orderNumber, It.Is<DeliveryUpdateDomain>(domain => domain.State == StateDomain.Completed), CancellationToken.None), Times.Once);
+        _deliveryServiceMock.Verify(mock => mock.Get(orderNumber, CancellationToken.None), Times.Once);
+        _deliveryServiceMock.Verify(mock => mock.Update(orderNumber, It.Is<UpdateDeliveryRequestDomain>(domain => domain.State == StateDomain.Completed), CancellationToken.None), Times.Once);
         _rabbitMqServiceMock.Verify(mock => mock.ProduceMessage(It.Is<DeliveryUpdatedMessage>(message => message.OrderNumber == orderNumber && message.NewState == StateDomain.Completed.ToString())), Times.Once);
     }
     
@@ -144,9 +189,9 @@ public class DeliveryBusinessTests
     {
         // Arrange
         const string orderNumber = "1234";
-        var delivery = new DeliveryDomain.DomainModels.Deliveries.DeliveryDomain
+        var delivery = new DeliveryDomain.DomainModels.DeliveryDomain
         {
-            Order = new OrderDomain
+            Order = new DeliveryDomain.DomainModels.DeliveryDomain.DeliveryOrderDomain
             {
                 OrderNumber = orderNumber
             },
@@ -156,6 +201,8 @@ public class DeliveryBusinessTests
 
         // Act and Assert
         Assert.ThrowsAsync<DomainException>(() => _deliveryBusiness.Complete(orderNumber, CancellationToken.None));
+        _deliveryServiceMock.Verify(mock => mock.Update(It.IsAny<string>(), It.IsAny<UpdateDeliveryRequestDomain>(), It.IsAny<CancellationToken>()), Times.Never);
+        _rabbitMqServiceMock.Verify(mock => mock.ProduceMessage(It.IsAny<DeliveryUpdatedMessage>()), Times.Never);
         return Task.CompletedTask;
     }
     
@@ -164,9 +211,9 @@ public class DeliveryBusinessTests
     {
         // Arrange
         const string orderNumber = "1234";
-        var delivery = new DeliveryDomain.DomainModels.Deliveries.DeliveryDomain
+        var delivery = new DeliveryDomain.DomainModels.DeliveryDomain
         {
-            Order = new OrderDomain
+            Order = new DeliveryDomain.DomainModels.DeliveryDomain.DeliveryOrderDomain
             {
                 OrderNumber = orderNumber
             },
@@ -178,7 +225,8 @@ public class DeliveryBusinessTests
         await _deliveryBusiness.Cancel(orderNumber, CancellationToken.None);
 
         // Assert
-        _deliveryServiceMock.Verify(mock => mock.Update(orderNumber, It.Is<DeliveryUpdateDomain>(domain => domain.State == StateDomain.Cancelled), CancellationToken.None), Times.Once);
+        _deliveryServiceMock.Verify(mock => mock.Get(orderNumber, CancellationToken.None), Times.Once);
+        _deliveryServiceMock.Verify(mock => mock.Update(orderNumber, It.Is<UpdateDeliveryRequestDomain>(domain => domain.State == StateDomain.Cancelled), CancellationToken.None), Times.Once);
         _rabbitMqServiceMock.Verify(mock => mock.ProduceMessage(It.Is<DeliveryUpdatedMessage>(message => message.OrderNumber == orderNumber && message.NewState == StateDomain.Cancelled.ToString())), Times.Once);
     }
     
@@ -189,9 +237,9 @@ public class DeliveryBusinessTests
     {
         // Arrange
         const string orderNumber = "1234";
-        var delivery = new DeliveryDomain.DomainModels.Deliveries.DeliveryDomain
+        var delivery = new DeliveryDomain.DomainModels.DeliveryDomain
         {
-            Order = new OrderDomain
+            Order = new DeliveryDomain.DomainModels.DeliveryDomain.DeliveryOrderDomain
             {
                 OrderNumber = orderNumber
             },
@@ -201,6 +249,22 @@ public class DeliveryBusinessTests
 
         // Act and Assert
         Assert.ThrowsAsync<DomainException>(() => _deliveryBusiness.Complete(orderNumber, CancellationToken.None));
+        _deliveryServiceMock.Verify(mock => mock.Update(It.IsAny<string>(), It.IsAny<UpdateDeliveryRequestDomain>(), It.IsAny<CancellationToken>()), Times.Never);
+        _rabbitMqServiceMock.Verify(mock => mock.ProduceMessage(It.IsAny<DeliveryUpdatedMessage>()), Times.Never);
+        return Task.CompletedTask;
+    }
+    
+    [Test]
+    public Task Cancel_ThrowsException_DeliveryDoesNotExist()
+    {
+        // Arrange
+        const string orderNumber = "1234";
+        _deliveryServiceMock.Setup(mock => mock.Get(orderNumber, CancellationToken.None)).ReturnsAsync((DeliveryDomain.DomainModels.DeliveryDomain?)null);
+
+        // Act and Assert
+        Assert.ThrowsAsync<DomainException>(() => _deliveryBusiness.Complete(orderNumber, CancellationToken.None));
+        _deliveryServiceMock.Verify(mock => mock.Update(It.IsAny<string>(), It.IsAny<UpdateDeliveryRequestDomain>(), It.IsAny<CancellationToken>()), Times.Never);
+        _rabbitMqServiceMock.Verify(mock => mock.ProduceMessage(It.IsAny<DeliveryUpdatedMessage>()), Times.Never);
         return Task.CompletedTask;
     }
     
@@ -209,9 +273,9 @@ public class DeliveryBusinessTests
     {
         // Arrange
         const string orderNumber = "1234";
-        var delivery = new DeliveryDomain.DomainModels.Deliveries.DeliveryDomain
+        var delivery = new DeliveryDomain.DomainModels.DeliveryDomain
         {
-            Order = new OrderDomain
+            Order = new DeliveryDomain.DomainModels.DeliveryDomain.DeliveryOrderDomain
             {
                 OrderNumber = orderNumber
             },
@@ -223,19 +287,24 @@ public class DeliveryBusinessTests
         await _deliveryBusiness.Delete(orderNumber, CancellationToken.None);
 
         // Assert
+        _deliveryServiceMock.Verify(mock => mock.Get(orderNumber, CancellationToken.None), Times.Once);
         _deliveryServiceMock.Verify(mock => mock.Delete(orderNumber, CancellationToken.None), Times.Once);
         _rabbitMqServiceMock.Verify(mock => mock.ProduceMessage(It.Is<DeliveryDeletedMessage>(message => message.OrderNumber == orderNumber)), Times.Once);
     }
     
     [Test]
-    public Task Cancel_ThrowsException_OrderDoesNotExist()
+    public Task Delete_ThrowsException_DeliveryDoesNotExist()
     {
         // Arrange
         const string orderNumber = "1234";
-        _deliveryServiceMock.Setup(mock => mock.Get(orderNumber, CancellationToken.None)).ReturnsAsync((DeliveryDomain.DomainModels.Deliveries.DeliveryDomain?)null);
+        _deliveryServiceMock
+            .Setup(mock => mock.Get(orderNumber, CancellationToken.None))
+            .ReturnsAsync((DeliveryDomain.DomainModels.DeliveryDomain?)null);
 
         // Act and Assert
-        Assert.ThrowsAsync<DomainException>(() => _deliveryBusiness.Complete(orderNumber, CancellationToken.None));
+        Assert.ThrowsAsync<DomainException>(() => _deliveryBusiness.Delete(orderNumber, CancellationToken.None));
+        _deliveryServiceMock.Verify(mock => mock.Delete(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        _rabbitMqServiceMock.Verify(mock => mock.ProduceMessage(It.IsAny<DeliveryDeletedMessage>()), Times.Never);
         return Task.CompletedTask;
     }
 }

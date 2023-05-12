@@ -1,10 +1,14 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using DeliveryApi.AutoMapperProfiles;
 using DeliveryApi.Configurations;
 using DeliveryDomain.Businesses;
 using DeliveryDomain.Interfaces.Businesses;
 using DeliveryDomain.Interfaces.Configurations;
+using DeliveryDomain.Interfaces.Initializers;
 using DeliveryDomain.Interfaces.Services;
+using DeliveryInfrastructure.AutoMapperProfiles;
+using DeliveryInfrastructure.Initializers;
 using DeliveryInfrastructure.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -25,6 +29,7 @@ public static class ServiceCollectionExtensions
             .AddCors()
             .AddResponseCompression()
             .AddConfigurations(configurationManager)
+            .AddAutoMapperProfiles()
             .AddFluentValidationConfigurations()
             .AddRabbitMqConfigurations(configurationManager)
             .AddBusinesses()
@@ -43,7 +48,8 @@ public static class ServiceCollectionExtensions
             .RegisterConfiguration<IElasticSearchConfiguration, ElasticSearchConfiguration>(configuration)
             .RegisterConfiguration<IMySqlConfiguration, MySqlConfiguration>(configuration)
             .RegisterConfiguration<IRabbitMqConfiguration, RabbitMqConfiguration>(configuration)
-            .RegisterConfiguration<IAppSettings, AppSettings>(configuration);
+            .RegisterConfiguration<IAppSettings, AppSettings>(configuration)
+            .RegisterConfiguration<IMongoDbConfiguration, MongoDbConfiguration>(configuration);
     }
     
     private static IServiceCollection RegisterConfiguration<TConfigurationInterface, TConfigurationClass>(
@@ -59,6 +65,13 @@ public static class ServiceCollectionExtensions
             .AddSingleton<TConfigurationInterface>(x =>
                 x.GetRequiredService<IOptions<TConfigurationClass>>().Value
             );
+    }
+    
+    private static IServiceCollection AddAutoMapperProfiles(this IServiceCollection services)
+    {
+        return services
+            .AddAutoMapper(typeof(ApiModelProfiles))
+            .AddAutoMapper(typeof(InfrastructureModelProfiles));
     }
     
     private static IServiceCollection AddFluentValidationConfigurations(this IServiceCollection services)
@@ -95,7 +108,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IRabbitMqService, RabbitMqService>()
             .AddSingleton<IJwtUtils, JwtUtils>()
             .AddScoped<IUserService, UserService>()
-            .AddSingleton<IMySqlInitializer, MySqlInitializer>();
+            .AddSingleton<IDeliveriesInitializer, DeliveriesInitializer>()
+            .AddSingleton<IUsersInitializer, UsersInitializer>();
     }
     
     private static IServiceCollection AddSwagger(this IServiceCollection services)

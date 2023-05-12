@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryApiTests", "Tests\D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryBackground", "DeliveryBackground\DeliveryBackground.csproj", "{C9946901-BE95-4653-80C2-787025982BBE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryInfrastructureTests", "Tests\DeliveryInfrastructureTests\DeliveryInfrastructureTests.csproj", "{A79C4E3A-E534-4ADF-974A-B711E73E53FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{C9946901-BE95-4653-80C2-787025982BBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9946901-BE95-4653-80C2-787025982BBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9946901-BE95-4653-80C2-787025982BBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A79C4E3A-E534-4ADF-974A-B711E73E53FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A79C4E3A-E534-4ADF-974A-B711E73E53FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A79C4E3A-E534-4ADF-974A-B711E73E53FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A79C4E3A-E534-4ADF-974A-B711E73E53FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

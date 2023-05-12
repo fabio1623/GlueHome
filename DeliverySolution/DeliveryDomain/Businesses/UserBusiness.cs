@@ -1,3 +1,4 @@
+using DeliveryDomain.DomainModels;
 using DeliveryDomain.DomainModels.Users;
 using DeliveryDomain.Interfaces.Businesses;
 using DeliveryDomain.Interfaces.Services;
@@ -19,33 +20,37 @@ public class UserBusiness : IUserBusiness
         _logger = logger;
     }
     
-    public async Task<AuthenticateResponseDomain?> Authenticate(AuthenticateRequestDomain? authenticateRequestDomain)
+    public async Task<AuthenticateUserResponseDomain?> Authenticate(AuthenticateUserRequestDomain? authenticateRequestDomain, CancellationToken cancellationToken)
     {
-        var user = await _userService.GetByUsername(authenticateRequestDomain?.Username);
+        var userDomain = await _userService.GetByUsername(authenticateRequestDomain?.Username, cancellationToken);
         
         // validate
-        if (user == null || !BCryptNet.Verify(authenticateRequestDomain?.Password, user.PasswordHash))
+        if (userDomain == null || !BCryptNet.Verify(authenticateRequestDomain?.Password, userDomain.PasswordHash))
         {
             _logger.LogWarning("Username or password is incorrect.");
             return null;   
         }
 
         // authentication successful so generate jwt token
-        var jwtToken = _jwtUtils.GenerateJwtToken(user);
-        if (!string.IsNullOrWhiteSpace(jwtToken)) 
-            return new AuthenticateResponseDomain(user, jwtToken);
+        var jwtToken = _jwtUtils.GenerateJwtToken(userDomain);
+        if (!string.IsNullOrWhiteSpace(jwtToken))
+            return new AuthenticateUserResponseDomain
+            {
+                User = userDomain,
+                Token = jwtToken
+            };
         
         _logger.LogWarning("Could not generate Jwt Token.");
         return null;
     }
 
-    public async Task<IEnumerable<UserDomain>?> GetAll()
+    public async Task<PagedListDomain<UserDomain?>> GetPaged(int? requestedPage, int? pageSize, CancellationToken cancellationToken)
     {
-        return await _userService.GetAll();
+        return await _userService.GetPaged(requestedPage, pageSize, cancellationToken);
     }
 
-    public async Task<UserDomain?> GetById(int? userId)
+    public async Task<UserDomain?> Get(string? id, CancellationToken cancellationToken)
     {
-        return await _userService.GetById(userId);
+        return await _userService.Get(id, cancellationToken);
     }
 }
