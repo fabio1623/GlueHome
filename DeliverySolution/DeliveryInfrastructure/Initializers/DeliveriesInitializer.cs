@@ -25,7 +25,7 @@ public class DeliveriesInitializer : DeliveryService, IDeliveriesInitializer
 
     public async Task Initialize(CancellationToken cancellationToken)
     {
-        await SeedDeliveries(1000);
+        await SeedDeliveries(1000, cancellationToken);
     }
 
     public async Task ExpireDeliveries(CancellationToken cancellationToken)
@@ -92,7 +92,7 @@ public class DeliveriesInitializer : DeliveryService, IDeliveriesInitializer
         await _rabbitMqService.ProduceMessage(deliveriesExpiredMessage);
     }
 
-    private async Task SeedDeliveries(int count)
+    private async Task SeedDeliveries(int count, CancellationToken cancellationToken)
     {
         var deliveries = new List<DeliveryInfra>();
         var random = new Random();
@@ -105,7 +105,8 @@ public class DeliveriesInitializer : DeliveryService, IDeliveriesInitializer
     
         try
         {
-            await MongoCollection.InsertManyAsync(deliveries);
+            var insertManyOptions = new InsertManyOptions();
+            await MongoCollection.InsertManyAsync(deliveries, insertManyOptions, cancellationToken);
             _logger.LogInformation("Deliveries seed done.");
         }
         catch (Exception e)
@@ -138,7 +139,7 @@ public class DeliveriesInitializer : DeliveryService, IDeliveriesInitializer
             Sender = $"Sender {i}"
         };
     
-        var delivery = new DeliveryInfra
+        return new DeliveryInfra
         {
             AccessWindow = accessWindow,
             Recipient = recipient,
@@ -150,6 +151,5 @@ public class DeliveriesInitializer : DeliveryService, IDeliveriesInitializer
             CreatedAt = currentDateTime,
             UpdatedAt = currentDateTime
         };
-        return delivery;
     }
 }

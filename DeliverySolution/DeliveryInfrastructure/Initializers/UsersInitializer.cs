@@ -5,6 +5,7 @@ using DeliveryInfrastructure.Enums;
 using DeliveryInfrastructure.InfrastructureModels;
 using DeliveryInfrastructure.Services;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace DeliveryInfrastructure.Initializers;
@@ -20,10 +21,10 @@ public class UsersInitializer : UserService, IUsersInitializer
 
     public async Task Initialize(CancellationToken cancellationToken)
     {
-        await SeedUsers();
+        await SeedUsers(cancellationToken);
     }
     
-    private async Task SeedUsers()
+    private async Task SeedUsers(CancellationToken cancellationToken)
     {
         var users = new List<UserInfra>
         {
@@ -34,7 +35,8 @@ public class UsersInitializer : UserService, IUsersInitializer
     
         try
         {
-            await MongoCollection.InsertManyAsync(users);
+            var insertManyOptions = new InsertManyOptions();
+            await MongoCollection.InsertManyAsync(users, insertManyOptions, cancellationToken);
             _logger.LogInformation("Users seed done.");
         }
         catch (Exception e)
