@@ -4,7 +4,7 @@ Delivery Solution is a .NET 7 application that provides endpoints to manage deli
 
 - `DeliveryApi`: the API layer that exposes the endpoints.
 - `DeliveryDomain`: the business logic layer that contains the domain models and services.
-- `DeliveryInfrastructure`: the infrastructure layer that deals with data persistence using MySQL and message queues using RabbitMQ.
+- `DeliveryInfrastructure`: the infrastructure layer that deals with data persistence using MongoDB and message queues using RabbitMQ.
 - `DeliveryBackground`: the background task that updates expired deliveries state every hour.
 
 There are also 3 Unit Tests projects:
