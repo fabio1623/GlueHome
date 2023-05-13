@@ -46,7 +46,6 @@ public static class ServiceCollectionExtensions
     {
         return services
             .RegisterConfiguration<IElasticSearchConfiguration, ElasticSearchConfiguration>(configuration)
-            .RegisterConfiguration<IMySqlConfiguration, MySqlConfiguration>(configuration)
             .RegisterConfiguration<IRabbitMqConfiguration, RabbitMqConfiguration>(configuration)
             .RegisterConfiguration<IAppSettings, AppSettings>(configuration)
             .RegisterConfiguration<IMongoDbConfiguration, MongoDbConfiguration>(configuration);

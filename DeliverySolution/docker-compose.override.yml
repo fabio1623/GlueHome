@@ -7,10 +7,8 @@ services:
         
       - ElasticSearchConfiguration__ConnectionString=http://elasticsearch:9200
       
-      - MySqlConfiguration__Server=mysql
-      - MySqlConfiguration__DbName=delivery_db
-      - MySqlConfiguration__UserName=delivery_db_user
-      - MySqlConfiguration__Password=delivery_db_password
+      - MongoDbConfiguration__ConnectionString=mongodb://root:example@localhost:27017
+      - MongoDbConfiguration__Database=DeliveryApi
         
       - RabbitMqConfiguration__HostName=rabbitmq
       - RabbitMqConfiguration__UserName=guest
@@ -30,10 +28,8 @@ services:
     environment:
       - ElasticSearchConfiguration__ConnectionString=http://elasticsearch:9200
 
-      - MySqlConfiguration__Server=mysql
-      - MySqlConfiguration__DbName=delivery_db
-      - MySqlConfiguration__UserName=delivery_db_user
-      - MySqlConfiguration__Password=delivery_db_password
+      - MongoDbConfiguration__ConnectionString=mongodb://root:example@localhost:27017
+      - MongoDbConfiguration__Database=DeliveryApi
 
       - RabbitMqConfiguration__HostName=rabbitmq
       - RabbitMqConfiguration__UserName=guest
@@ -52,15 +48,6 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-  
-  mysql:
-    environment:
-      MYSQL_ROOT_PASSWORD: mysql_root_password
-      MYSQL_DATABASE: delivery_db
-      MYSQL_USER: delivery_db_user
-      MYSQL_PASSWORD: delivery_db_password
-    ports:
-      - "3306:3306"
         
   elasticsearch:
     environment:
