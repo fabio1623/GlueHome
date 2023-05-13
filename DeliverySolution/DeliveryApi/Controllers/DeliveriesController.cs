@@ -23,7 +23,7 @@ public class DeliveriesController : ControllerExtensions
     }
     
     [Authorize(Role.User, Role.Partner)]
-    [HttpPost("[action]")]
+    [HttpPost]
     [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Post))]
     public async Task<ActionResult<Delivery?>> Create(CreateDeliveryRequest? request, CancellationToken cancellationToken)
     {
@@ -34,7 +34,6 @@ public class DeliveriesController : ControllerExtensions
         return CreatedAtAction($"{nameof(Get)}", new { deliveryId = mappedDelivery?.Id }, mappedDelivery);
     }
     
-    [Authorize(Role.Admin)]
     [HttpGet]
     [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
     public async Task<ActionResult<PagedList<Delivery?>>> GetPaged(int? requestedPage, int? pageSize, CancellationToken cancellationToken)
@@ -50,7 +49,6 @@ public class DeliveriesController : ControllerExtensions
         return _mapper.Map<PagedList<Delivery?>>(pagedItems);
     }
     
-    [Authorize(Role.User, Role.Partner)]
     [HttpGet("{deliveryId}")]
     [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
     public async Task<ActionResult<Delivery?>> Get(string? deliveryId, CancellationToken cancellationToken)
