@@ -6,4 +6,5 @@ public interface IRabbitMqConfiguration
     string? UserName { get; set; }
     string? Password { get; set; }
     string? ExchangeName { get; set; }
+    double? RetryDelayInMinutes { get; set; }
 }

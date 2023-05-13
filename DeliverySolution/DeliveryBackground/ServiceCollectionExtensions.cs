@@ -17,7 +17,8 @@ public static class ServiceCollectionExtensions
         return services
             .RegisterConfiguration<IElasticSearchConfiguration, ElasticSearchConfiguration>(configuration)
             .RegisterConfiguration<IRabbitMqConfiguration, RabbitMqConfiguration>(configuration)
-            .RegisterConfiguration<IMongoDbConfiguration, MongoDbConfiguration>(configuration);
+            .RegisterConfiguration<IMongoDbConfiguration, MongoDbConfiguration>(configuration)
+            .RegisterConfiguration<IWorkerConfiguration, WorkerConfiguration>(configuration);
     }
     
     public static IServiceCollection AddAutoMapperProfiles(this IServiceCollection services)

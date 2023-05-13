@@ -18,13 +18,26 @@ public class RabbitMqService : IRabbitMqService, IDisposable
     public RabbitMqService(IRabbitMqConfiguration rabbitMqConfiguration, IConnectionFactory connectionFactory, ILogger<RabbitMqService> logger)
     {
         _rabbitMqConfiguration = rabbitMqConfiguration;
-        _connection = connectionFactory.CreateConnection();
-        _channel = _connection.CreateModel();
-        _channel.ExchangeDeclare(
-            rabbitMqConfiguration.ExchangeName, 
-            ExchangeType.Direct);
-        
         _logger = logger;
+        
+        while (true)
+        {
+            try
+            {
+                _connection = connectionFactory.CreateConnection();
+                _channel = _connection.CreateModel();
+                _channel.ExchangeDeclare(
+                    rabbitMqConfiguration.ExchangeName, 
+                    ExchangeType.Direct);
+                break;
+            }
+            catch (Exception ex)
+            {
+                var delay = TimeSpan.FromMinutes(_rabbitMqConfiguration.RetryDelayInMinutes ?? 0.5);
+                _logger.LogWarning(ex, "Failed to connect to RabbitMQ. Retrying in {delay} minutes...", delay.TotalMinutes);
+                Thread.Sleep(delay);
+            }
+        }
     }
     
     public Task ProduceMessage<T>(T message)
