@@ -120,9 +120,10 @@ public abstract class BaseMongoDbService<TDomainModel, TDomainModelCreate, TDoma
             .FirstOrDefault()?
             .Count ?? 0;
 
-        var totalPages = (int)count / pageSize;
-        if (totalPages == 0 && count > 0)
-            totalPages = 1;
+        var totalPages = (int)Math.Ceiling((double)count / pageSize);
+
+        if (requestedPage > totalPages)
+            throw new InfrastructureException($"Page '{requestedPage}' does not exist. Maximum page is '{totalPages}'.");
 
         var data = aggregation
             .FirstOrDefault()?
