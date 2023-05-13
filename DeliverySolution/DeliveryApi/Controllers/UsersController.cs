@@ -36,10 +36,10 @@ public class UsersController : ControllerExtensions
 
     [HttpGet]
     [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
-    public async Task<ActionResult<IEnumerable<User>?>> GetPaged(int? requestedPage, int? pageSize, CancellationToken cancellationToken)
+    public async Task<ActionResult<PagedList<User>?>> GetPaged(int? requestedPage, int? pageSize, CancellationToken cancellationToken)
     {
         var userDomainList = await _userBusiness.GetPaged(requestedPage, pageSize, cancellationToken);
-        return _mapper.Map<IEnumerable<User>?>(userDomainList)?.ToList();
+        return _mapper.Map<PagedList<User>?>(userDomainList);
     }
 
     [HttpGet("{userId}")]
