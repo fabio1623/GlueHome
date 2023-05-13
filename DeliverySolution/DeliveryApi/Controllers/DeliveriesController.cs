@@ -25,12 +25,13 @@ public class DeliveriesController : ControllerExtensions
     [Authorize(Role.User, Role.Partner)]
     [HttpPost("[action]")]
     [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Post))]
-    public async Task<IActionResult> Create(CreateDeliveryRequest? request, CancellationToken cancellationToken)
+    public async Task<ActionResult<Delivery?>> Create(CreateDeliveryRequest? request, CancellationToken cancellationToken)
     {
         var requestDomain = _mapper.Map<CreateDeliveryRequestDomain>(request);
-        await _deliveryBusiness.Create(requestDomain, cancellationToken);
+        var deliveryDomain = await _deliveryBusiness.Create(requestDomain, cancellationToken);
+        var mappedDelivery = _mapper.Map<Delivery?>(deliveryDomain);
         
-        return NoContent();
+        return CreatedAtAction($"{nameof(Get)}", new { deliveryId = mappedDelivery?.Id }, mappedDelivery);
     }
     
     [Authorize(Role.Admin)]

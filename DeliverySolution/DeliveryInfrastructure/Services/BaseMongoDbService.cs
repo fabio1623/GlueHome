@@ -53,7 +53,7 @@ public abstract class BaseMongoDbService<TDomainModel, TDomainModelCreate, TDoma
         return await FindOne(filterDefinition, cancellationToken);
     }
 
-    public async Task Create(TDomainModelCreate? domainModelCreate, CancellationToken cancellationToken)
+    public async Task<TDomainModel?> Create(TDomainModelCreate? domainModelCreate, CancellationToken cancellationToken)
     {
         var infrastructureModel = Mapper.Map<TInfrastructureModel>(domainModelCreate);
         
@@ -61,7 +61,7 @@ public abstract class BaseMongoDbService<TDomainModel, TDomainModelCreate, TDoma
         infrastructureModel.CreatedAt = currentDateTime;
         infrastructureModel.UpdatedAt = currentDateTime;
 
-        await InsertOne(infrastructureModel, cancellationToken);
+        return await InsertOne(infrastructureModel, cancellationToken);
     }
 
     public async Task Update(string? id, TDomainModelUpdate? domainModelUpdate, CancellationToken cancellationToken)
@@ -157,7 +157,7 @@ public abstract class BaseMongoDbService<TDomainModel, TDomainModelCreate, TDoma
         return Mapper.Map<TDomainModel?>(infrastructureModel);
     }
     
-    private async Task InsertOne(TInfrastructureModel? infrastructureModel, CancellationToken cancellationToken)
+    private async Task<TDomainModel?> InsertOne(TInfrastructureModel? infrastructureModel, CancellationToken cancellationToken)
     {
         if (infrastructureModel == null)
             throw new InfrastructureException($"{typeof(TInfrastructureModel).Name} is null. Could not insert.");
@@ -171,6 +171,8 @@ public abstract class BaseMongoDbService<TDomainModel, TDomainModelCreate, TDoma
         {
             throw new InfrastructureException($"Could not insert {typeof(TInfrastructureModel).Name}: {JsonSerializer.Serialize(infrastructureModel, infrastructureModel.GetType())}.", e);
         }
+        
+        return Mapper.Map<TDomainModel?>(infrastructureModel);
     }
 
     private async Task UpdateOne(string? id, UpdateDefinition<TInfrastructureModel> updateDefinition, CancellationToken cancellationToken)

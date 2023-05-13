@@ -2,5 +2,5 @@ namespace DeliveryDomain.DomainModels.BrokerMessages;
 
 public class DeliveryCreatedMessage
 {
-    public string? OrderNumber { get; set; }
+    public string? DeliveryId { get; set; }
 }

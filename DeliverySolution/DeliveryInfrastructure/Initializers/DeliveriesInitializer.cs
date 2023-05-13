@@ -87,7 +87,7 @@ public class DeliveriesInitializer : DeliveryService, IDeliveriesInitializer
         var ids = Mapper.Map<IEnumerable<string>>(objectIds);
         var deliveriesExpiredMessage = new DeliveriesExpiredMessage
         {
-            OrderNumbers = ids
+            DeliveryIds = ids
         };
         await _rabbitMqService.ProduceMessage(deliveriesExpiredMessage);
     }

@@ -19,10 +19,11 @@ public class DeliveryBusiness : IDeliveryBusiness
         _rabbitMqService = rabbitMqService;
     }
 
-    public async Task Create(CreateDeliveryRequestDomain? deliveryDomain, CancellationToken cancellationToken)
+    public async Task<DomainModels.DeliveryDomain?> Create(CreateDeliveryRequestDomain? deliveryDomain, CancellationToken cancellationToken)
     {
-        await _deliveryService.Create(deliveryDomain, cancellationToken);
-        await ProduceDeliveryCreated(deliveryDomain?.Order?.OrderNumber);
+        var delivery = await _deliveryService.Create(deliveryDomain, cancellationToken);
+        await ProduceDeliveryCreated(delivery?.Id);
+        return delivery;
     }
 
     public async Task<PagedListDomain<DomainModels.DeliveryDomain?>> GetPaged(int? requestedPage, int? pageSize, CancellationToken cancellationToken)
@@ -72,45 +73,45 @@ public class DeliveryBusiness : IDeliveryBusiness
         await ProduceDeliveryDeleted(deliveryId);
     }
     
-    private async Task ProduceDeliveryCreated(string? orderNumber)
+    private async Task ProduceDeliveryCreated(string? deliveryId)
     {
         var deliveryCreatedMessage = new DeliveryCreatedMessage
         {
-            OrderNumber = orderNumber
+            DeliveryId = deliveryId
         };
         await _rabbitMqService.ProduceMessage(deliveryCreatedMessage);
     }
     
-    private async Task UpdateAndProduceDeliveryUpdated(string? orderNumber, StateDomain state, CancellationToken cancellationToken)
+    private async Task UpdateAndProduceDeliveryUpdated(string? deliveryId, StateDomain state, CancellationToken cancellationToken)
     {
-        await UpdateDelivery(orderNumber, state, cancellationToken);
-        await ProduceDeliveryUpdated(orderNumber, state);
+        await UpdateDelivery(deliveryId, state, cancellationToken);
+        await ProduceDeliveryUpdated(deliveryId, state);
     }
 
-    private async Task UpdateDelivery(string? orderNumber, StateDomain state, CancellationToken cancellationToken)
+    private async Task UpdateDelivery(string? deliveryId, StateDomain state, CancellationToken cancellationToken)
     {
         var deliveryUpdateDomain = new UpdateDeliveryRequestDomain
         {
             State = state
         };
-        await _deliveryService.Update(orderNumber, deliveryUpdateDomain, cancellationToken);
+        await _deliveryService.Update(deliveryId, deliveryUpdateDomain, cancellationToken);
     }
 
-    private async Task ProduceDeliveryUpdated(string? orderNumber, StateDomain? newState)
+    private async Task ProduceDeliveryUpdated(string? deliveryId, StateDomain? newState)
     {
         var deliveryUpdatedMessage = new DeliveryUpdatedMessage
         {
-            OrderNumber = orderNumber,
+            DeliveryId = deliveryId,
             NewState = newState?.ToString()
         };
         await _rabbitMqService.ProduceMessage(deliveryUpdatedMessage);
     }
     
-    private async Task ProduceDeliveryDeleted(string? orderNumber)
+    private async Task ProduceDeliveryDeleted(string? deliveryId)
     {
         var deliveryUpdatedMessage = new DeliveryDeletedMessage
         {
-            OrderNumber = orderNumber
+            DeliveryId = deliveryId
         };
         await _rabbitMqService.ProduceMessage(deliveryUpdatedMessage);
     }

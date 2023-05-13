@@ -36,7 +36,7 @@ public class DeliveriesControllerTests
         var result = await _deliveriesController.Create(createDelivery, cancellationToken);
 
         // Assert
-        Assert.That(result, Is.InstanceOf<NoContentResult>());
+        Assert.That(result, Is.InstanceOf<ActionResult<Delivery>>());
         _mockDeliveryBusiness.Verify(x => x.Create(It.IsAny<CreateDeliveryRequestDomain>(), cancellationToken), Times.Once);
     }
     
