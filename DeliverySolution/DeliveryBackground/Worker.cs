@@ -20,12 +20,12 @@ public class Worker : BackgroundService
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            _logger.LogInformation("Worker running at: {time}", DateTimeOffset.UtcNow);
+            _logger.LogInformation("Worker running at: {time}", DateTime.UtcNow);
             
             await _deliveriesInitializer.ExpireDeliveries(cancellationToken);
             
             var delay = TimeSpan.FromMinutes(_workerConfiguration.DelayInMinutes ?? 60);
-            _logger.LogInformation("Worker finished at: {time}. Waiting {delay} minutes.", DateTimeOffset.UtcNow, delay.TotalMinutes);
+            _logger.LogInformation("Worker finished at: {time}. Waiting {delay} minutes.", DateTime.UtcNow, delay.TotalMinutes);
             
             await Task.Delay(delay, cancellationToken);
         }
