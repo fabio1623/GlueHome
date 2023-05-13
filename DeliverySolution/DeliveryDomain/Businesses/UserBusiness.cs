@@ -36,7 +36,6 @@ public class UserBusiness : IUserBusiness
         if (!string.IsNullOrWhiteSpace(jwtToken))
             return new AuthenticateUserResponseDomain
             {
-                User = userDomain,
                 Token = jwtToken
             };
         
