@@ -34,7 +34,7 @@ public class DeliveriesInitializer : DeliveryService, IDeliveriesInitializer
         
         var filter = filterDefinitionBuilder.And(
             filterDefinitionBuilder.Lt(x => x.AccessWindow!.EndTime, DateTime.UtcNow), 
-            filterDefinitionBuilder.Ne(x => x.State, StateInfra.Expired)
+            filterDefinitionBuilder.Eq(x => x.State, StateInfra.Created)
         );
         
         var findOptions = new FindOptions<DeliveryInfra, ObjectId>
