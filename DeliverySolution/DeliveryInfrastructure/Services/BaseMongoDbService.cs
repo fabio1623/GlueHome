@@ -83,33 +83,25 @@ public abstract class BaseMongoDbService<TDomainModel, TDomainModelCreate, TDoma
         if(result.DeletedCount == 0)
             throw new InfrastructureException($"{typeof(TInfrastructureModel).Name} '{id}' does not exist.");
     }
-
+    
     private async Task<PagedListDomain<TDomainModel?>> FindPaged(FilterDefinition<TInfrastructureModel> filterDefinition, int requestedPage, int pageSize, CancellationToken cancellationToken)
     {
-        var countPipelineDefinition = PipelineDefinition<TInfrastructureModel, AggregateCountResult>
-            .Create(new[]
-            {
-                PipelineStageDefinitionBuilder.Count<TInfrastructureModel>()
-            });
-
         const string countFacetName = "count";
         const string resultsFacetName = "results";
 
-        var countFacet = AggregateFacet.Create(countFacetName, countPipelineDefinition);
-
-        var resultsPipelineDefinition = PipelineDefinition<TInfrastructureModel, TInfrastructureModel>
-            .Create(new[]
-            {
-                PipelineStageDefinitionBuilder.Skip<TInfrastructureModel>((requestedPage - 1) * pageSize),
-                PipelineStageDefinitionBuilder.Limit<TInfrastructureModel>(pageSize)
-            });
-
-        var resultsFacet = AggregateFacet.Create(resultsFacetName, resultsPipelineDefinition);
+        var countFacet = AggregateFacet.Create(countFacetName, PipelineDefinition<TInfrastructureModel, AggregateCountResult>.Create(new[] { PipelineStageDefinitionBuilder.Count<TInfrastructureModel>() }));
+        var resultFacet = AggregateFacet.Create(resultsFacetName, PipelineDefinition<TInfrastructureModel, TInfrastructureModel>.Create(new[] { PipelineStageDefinitionBuilder.Skip<TInfrastructureModel>((requestedPage - 1) * pageSize), PipelineStageDefinitionBuilder.Limit<TInfrastructureModel>(pageSize) }));
+        
+        var facets = new List<AggregateFacet<TInfrastructureModel>>
+        {
+            countFacet,
+            resultFacet
+        };
 
         var aggregation = await MongoCollection
             .Aggregate()
             .Match(filterDefinition)
-            .Facet(countFacet, resultsFacet)
+            .Facet(facets)
             .ToListAsync(cancellationToken);
 
         var count = aggregation
@@ -119,15 +111,15 @@ public abstract class BaseMongoDbService<TDomainModel, TDomainModelCreate, TDoma
             .Output<AggregateCountResult>()?
             .FirstOrDefault()?
             .Count ?? 0;
-
+        
         var totalPages = (int)Math.Ceiling((double)count / pageSize);
-
+        
         if (requestedPage > totalPages)
             throw new InfrastructureException($"Page '{requestedPage}' does not exist. Maximum page is '{totalPages}'.");
 
         var data = aggregation
             .FirstOrDefault()?
-            .Facets
+            .Facets?
             .FirstOrDefault(x => x.Name == resultsFacetName)?
             .Output<TInfrastructureModel>();
 
