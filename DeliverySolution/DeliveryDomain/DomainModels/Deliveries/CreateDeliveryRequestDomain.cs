@@ -5,9 +5,15 @@ namespace DeliveryDomain.DomainModels.Deliveries;
 public class CreateDeliveryRequestDomain
 {
     public StateDomain? State => StateDomain.Created;
-    public DateTime? EndTime { get; set; }
+    public CreateDeliveryAccessWindowDomain? AccessWindow { get; set; }
     public CreateDeliveryRecipientDomain? Recipient { get; set; }
     public CreateDeliveryOrderDomain? Order { get; set; }
+    
+    public class CreateDeliveryAccessWindowDomain
+    {
+        public DateTime? StartTime => DateTime.UtcNow;
+        public DateTime? EndTime { get; set; }
+    }
     
     public class CreateDeliveryRecipientDomain
     {

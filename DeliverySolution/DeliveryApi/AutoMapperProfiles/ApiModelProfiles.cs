@@ -19,7 +19,8 @@ namespace DeliveryApi.AutoMapperProfiles
 
         private void AddDeliveryMappings()
         {
-            CreateMap<CreateDeliveryRequest, CreateDeliveryRequestDomain>();
+            CreateMap<CreateDeliveryRequest, CreateDeliveryRequestDomain>()
+                .ForPath(dest => dest.AccessWindow!.EndTime, opt => opt.MapFrom(src => src.EndTime));
             CreateMap<CreateDeliveryRequest.CreateDeliveryRecipient, CreateDeliveryRequestDomain.CreateDeliveryRecipientDomain>();
             CreateMap<CreateDeliveryRequest.CreateDeliveryOrder, CreateDeliveryRequestDomain.CreateDeliveryOrderDomain>();
             

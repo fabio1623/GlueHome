@@ -43,9 +43,9 @@ namespace DeliveryInfrastructure.AutoMapperProfiles
         {
             CreateMap<CreateDeliveryRequestDomain, DeliveryInfra>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
-                .ForPath(dest => dest.AccessWindow!.EndTime, opt => opt.MapFrom(src => src.EndTime))
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
+            CreateMap<CreateDeliveryRequestDomain.CreateDeliveryAccessWindowDomain, DeliveryInfra.DeliveryAccessWindowInfra>();
             CreateMap<CreateDeliveryRequestDomain.CreateDeliveryRecipientDomain, DeliveryInfra.DeliveryRecipientInfra>();
             CreateMap<CreateDeliveryRequestDomain.CreateDeliveryOrderDomain, DeliveryInfra.DeliveryOrderInfra>();
             
