@@ -7,10 +7,11 @@ Delivery Solution is a .NET 7 application that provides endpoints to manage deli
 - `DeliveryInfrastructure`: the infrastructure layer that deals with data persistence using MySQL and message queues using RabbitMQ.
 - `DeliveryBackground`: the background task that updates expired deliveries state every hour.
 
-There are also two Unit Tests projects:
+There are also 3 Unit Tests projects:
 
 - `DeliveryApiTests`: tests the Delivery endpoints.
 - `DeliveryDomainTests`: tests the business logic.
+- `DeliveryInfrastructureTests`: tests the database and message broker operations.
 
 ## Requirements
 
@@ -37,30 +38,44 @@ The following three users are automatically generated to interact with different
 
 ## Available Endpoints
 
-To interact with the API endpoints, you can use tools like Postman or cURL. It uses a Bearer Token.
+To interact with the API endpoints, you can use tools like Postman or cURL.
+
+### Users
+
+- `POST /users/authenticate` - Authenticate user.
+- `GET /users` - Gets paged users.
+- `GET /users/{userID}` - Gets the user by user id.
+
+### Deliveries
+
+It uses a Bearer Token.
 
 - `POST /deliveries/create` - Creates a new delivery.
-- `GET /deliveries/{orderNumber}` - Gets the delivery by order number.
-- `PUT /deliveries/approve/{orderNumber}` - Approves the delivery.
-- `PUT /deliveries/complete/{orderNumber}` - Completes the delivery.
-- `PUT /deliveries/cancel/{orderNumber}` - Cancels the delivery.
-- `DELETE /deliveries/{orderNumber}` - Deletes the delivery by order number.
+- `GET /deliveries` - Gets paged deliveries.
+- `GET /deliveries/{deliveryId}` - Gets the delivery by delivery id.
+- `PUT /deliveries/approve/{deliveryId}` - Approves the delivery.
+- `PUT /deliveries/complete/{deliveryId}` - Completes the delivery.
+- `PUT /deliveries/cancel/{deliveryId}` - Cancels the delivery.
+- `DELETE /deliveries/{deliveryId}` - Deletes the delivery by delivery id.
 
-## MySQL
+## MongoDB
 
-The users and deliveries are stored in MySQL. You can connect to the MySQL instance using the following credentials:
+The users and deliveries are stored in MongoDB. You can visualize the MongoDB instance by reaching `http://localhost:8081`, using the following credentials:
 
-- Host: localhost
-- Port: 3306
-- Database: delivery_db
-- Username: root
-- Password: mysql_root_password
+- Username: basic-user
+- Password: basic-user-password
 
 ## RabbitMQ
 
 The delivery updates (Created, Approved, Completed, Cancelled, and Deleted) will be pushed to the RabbitMQ exchange.
-You can interact with it through `http://localhost:15672`.
+You can interact with it through `http://localhost:15672`, using following credentials :
+
+- Username: guest
+- Password: guest
+
 If you want to see transiting messages, you can bind a queue to `delivery-exchange` exchange with `*` as routing key to see messages.
+
+Expiring deliveries are also pushed to RabbitMQ through `delivery-exchange-expiry` exchange with `*` as routing key.
 
 ## Logging
 
@@ -80,7 +95,7 @@ The above command will start the test runners and run all the tests in the solut
 
 ## Conclusion
 
-The Delivery Solution is a containerized application that stores deliveries in MySQL and sends delivery updates to RabbitMQ. It provides a RESTful API to create, get, update, and delete deliveries. The solution also includes unit tests to ensure the business logic is working as expected.
+The Delivery Solution is a containerized application that stores deliveries in MongoDB and sends delivery updates to RabbitMQ. It provides a RESTful API to create, get, update, and delete deliveries. The solution also includes unit tests to ensure the business logic is working as expected.
 
 ## License
 
