@@ -7,13 +7,14 @@ services:
         
       - ElasticSearchConfiguration__ConnectionString=http://elasticsearch:9200
       
-      - MongoDbConfiguration__ConnectionString=mongodb://root:example@localhost:27017
+      - MongoDbConfiguration__ConnectionString=mongodb://root:example@mongodb:27017
       - MongoDbConfiguration__Database=DeliveryApi
         
       - RabbitMqConfiguration__HostName=rabbitmq
       - RabbitMqConfiguration__UserName=guest
       - RabbitMqConfiguration__Password=guest
       - RabbitMqConfiguration__ExchangeName=delivery-exchange
+      - RabbitMqConfiguration__RetryDelayInMinutes=0.5
         
       - Serilog__MinimumLevel__Default=Information
       - Serilog__MinimumLevel__Override__Microsoft=Information
@@ -26,15 +27,18 @@ services:
     
   delivery.background:
     environment:
+      - WorkerConfiguration__DelayInMinutes=60
+      
       - ElasticSearchConfiguration__ConnectionString=http://elasticsearch:9200
 
-      - MongoDbConfiguration__ConnectionString=mongodb://root:example@localhost:27017
+      - MongoDbConfiguration__ConnectionString=mongodb://root:example@mongodb:27017
       - MongoDbConfiguration__Database=DeliveryApi
 
       - RabbitMqConfiguration__HostName=rabbitmq
       - RabbitMqConfiguration__UserName=guest
       - RabbitMqConfiguration__Password=guest
       - RabbitMqConfiguration__ExchangeName=delivery-exchange-expiry
+      - RabbitMqConfiguration__RetryDelayInMinutes=0.5
 
       - Serilog__MinimumLevel__Default=Information
       - Serilog__MinimumLevel__Override__Microsoft=Information
