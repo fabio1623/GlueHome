@@ -27,7 +27,7 @@ public class DeliveriesController : ControllerExtensions
     [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Post))]
     public async Task<ActionResult<Delivery?>> Create(CreateDeliveryRequest? request, CancellationToken cancellationToken)
     {
-        var requestDomain = _mapper.Map<CreateDeliveryRequestDomain>(request);
+        var requestDomain = _mapper.Map<CreateDeliveryDomain>(request);
         var deliveryDomain = await _deliveryBusiness.Create(requestDomain, cancellationToken);
         var mappedDelivery = _mapper.Map<Delivery?>(deliveryDomain);
         

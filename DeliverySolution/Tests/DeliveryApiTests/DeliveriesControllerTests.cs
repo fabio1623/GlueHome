@@ -37,7 +37,7 @@ public class DeliveriesControllerTests
 
         // Assert
         Assert.That(result, Is.InstanceOf<ActionResult<Delivery>>());
-        _mockDeliveryBusiness.Verify(x => x.Create(It.IsAny<CreateDeliveryRequestDomain>(), cancellationToken), Times.Once);
+        _mockDeliveryBusiness.Verify(x => x.Create(It.IsAny<CreateDeliveryDomain>(), cancellationToken), Times.Once);
     }
     
     [Test]

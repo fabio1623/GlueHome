@@ -19,7 +19,7 @@ public class DeliveryBusiness : IDeliveryBusiness
         _rabbitMqService = rabbitMqService;
     }
 
-    public async Task<DomainModels.DeliveryDomain?> Create(CreateDeliveryRequestDomain? deliveryDomain, CancellationToken cancellationToken)
+    public async Task<DomainModels.DeliveryDomain?> Create(CreateDeliveryDomain? deliveryDomain, CancellationToken cancellationToken)
     {
         var delivery = await _deliveryService.Create(deliveryDomain, cancellationToken);
         await ProduceDeliveryCreated(delivery?.Id);
@@ -90,7 +90,7 @@ public class DeliveryBusiness : IDeliveryBusiness
 
     private async Task UpdateDelivery(string? deliveryId, StateDomain state, CancellationToken cancellationToken)
     {
-        var deliveryUpdateDomain = new UpdateDeliveryRequestDomain
+        var deliveryUpdateDomain = new UpdateDeliveryDomain
         {
             State = state
         };

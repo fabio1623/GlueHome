@@ -19,10 +19,10 @@ namespace DeliveryApi.AutoMapperProfiles
 
         private void AddDeliveryMappings()
         {
-            CreateMap<CreateDeliveryRequest, CreateDeliveryRequestDomain>()
+            CreateMap<CreateDeliveryRequest, CreateDeliveryDomain>()
                 .ForPath(dest => dest.AccessWindow!.EndTime, opt => opt.MapFrom(src => src.EndTime));
-            CreateMap<CreateDeliveryRequest.CreateDeliveryRecipient, CreateDeliveryRequestDomain.CreateDeliveryRecipientDomain>();
-            CreateMap<CreateDeliveryRequest.CreateDeliveryOrder, CreateDeliveryRequestDomain.CreateDeliveryOrderDomain>();
+            CreateMap<CreateDeliveryRequest.CreateDeliveryRecipient, CreateDeliveryDomain.CreateDeliveryRecipientDomain>();
+            CreateMap<CreateDeliveryRequest.CreateDeliveryOrder, CreateDeliveryDomain.CreateDeliveryOrderDomain>();
             
             CreateMap<DeliveryDomain.DomainModels.DeliveryDomain, Delivery>();
             CreateMap<DeliveryDomain.DomainModels.DeliveryDomain.DeliveryAccessWindowDomain, Delivery.DeliveryAccessWindow>();
@@ -32,9 +32,9 @@ namespace DeliveryApi.AutoMapperProfiles
 
         private void AddUserMappings()
         {
-            CreateMap<AuthenticateUserRequest, AuthenticateUserRequestDomain>();
+            CreateMap<AuthenticateUserRequest, AuthenticateUserDomain>();
 
-            CreateMap<AuthenticateUserResponseDomain, AuthenticateUserResponse>();
+            CreateMap<AuthenticatedUserDomain, AuthenticateUserResponse>();
 
             CreateMap<UserDomain, User>();
         }

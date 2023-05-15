@@ -2,7 +2,7 @@ using DeliveryDomain.DomainEnums;
 
 namespace DeliveryDomain.DomainModels.Users;
 
-public class CreateUserRequestDomain
+public class CreateUserDomain
 {
     public string? Username { get; init; }
     public RoleDomain? Role { get; set; }

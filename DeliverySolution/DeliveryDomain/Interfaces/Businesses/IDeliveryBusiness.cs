@@ -5,7 +5,7 @@ namespace DeliveryDomain.Interfaces.Businesses;
 
 public interface IDeliveryBusiness
 {
-    Task<DomainModels.DeliveryDomain?> Create(CreateDeliveryRequestDomain? deliveryDomain, CancellationToken cancellationToken);
+    Task<DomainModels.DeliveryDomain?> Create(CreateDeliveryDomain? deliveryDomain, CancellationToken cancellationToken);
     Task<PagedListDomain<DomainModels.DeliveryDomain?>> GetPaged(int? requestedPage, int? pageSize, CancellationToken cancellationToken);
     Task<DomainModels.DeliveryDomain?> Get(string? deliveryId, CancellationToken cancellationToken);
     Task Approve(string? deliveryId, CancellationToken cancellationToken);

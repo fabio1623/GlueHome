@@ -31,7 +31,7 @@ namespace DeliveryInfrastructure.AutoMapperProfiles
 
         private void AddUserMappings()
         {
-            CreateMap<CreateUserRequestDomain, UserInfra>()
+            CreateMap<CreateUserDomain, UserInfra>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
@@ -41,13 +41,13 @@ namespace DeliveryInfrastructure.AutoMapperProfiles
 
         private void AddDeliveryMappings()
         {
-            CreateMap<CreateDeliveryRequestDomain, DeliveryInfra>()
+            CreateMap<CreateDeliveryDomain, DeliveryInfra>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
-            CreateMap<CreateDeliveryRequestDomain.CreateDeliveryAccessWindowDomain, DeliveryInfra.DeliveryAccessWindowInfra>();
-            CreateMap<CreateDeliveryRequestDomain.CreateDeliveryRecipientDomain, DeliveryInfra.DeliveryRecipientInfra>();
-            CreateMap<CreateDeliveryRequestDomain.CreateDeliveryOrderDomain, DeliveryInfra.DeliveryOrderInfra>();
+            CreateMap<CreateDeliveryDomain.CreateDeliveryAccessWindowDomain, DeliveryInfra.DeliveryAccessWindowInfra>();
+            CreateMap<CreateDeliveryDomain.CreateDeliveryRecipientDomain, DeliveryInfra.DeliveryRecipientInfra>();
+            CreateMap<CreateDeliveryDomain.CreateDeliveryOrderDomain, DeliveryInfra.DeliveryOrderInfra>();
             
             CreateMap<DeliveryInfra, DeliveryDomain.DomainModels.DeliveryDomain>();
             CreateMap<DeliveryInfra.DeliveryAccessWindowInfra, DeliveryDomain.DomainModels.DeliveryDomain.DeliveryAccessWindowDomain>();

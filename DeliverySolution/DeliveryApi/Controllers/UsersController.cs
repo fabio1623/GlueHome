@@ -26,7 +26,7 @@ public class UsersController : ControllerExtensions
     [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Post))]
     public async Task<ActionResult<AuthenticateUserResponse?>> Authenticate(AuthenticateUserRequest? request, CancellationToken cancellationToken)
     {
-        var requestDomain = _mapper.Map<AuthenticateUserRequestDomain>(request);
+        var requestDomain = _mapper.Map<AuthenticateUserDomain>(request);
         var responseDomain = await _userBusiness.Authenticate(requestDomain, cancellationToken);
         
         return responseDomain == null

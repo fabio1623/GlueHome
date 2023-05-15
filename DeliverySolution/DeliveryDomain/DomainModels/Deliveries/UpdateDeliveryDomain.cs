@@ -2,7 +2,7 @@ using DeliveryDomain.DomainEnums;
 
 namespace DeliveryDomain.DomainModels.Deliveries;
 
-public class UpdateDeliveryRequestDomain
+public class UpdateDeliveryDomain
 {
     public StateDomain? State { get; set; }
 }

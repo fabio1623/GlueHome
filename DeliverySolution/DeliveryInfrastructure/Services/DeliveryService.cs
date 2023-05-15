@@ -10,7 +10,7 @@ using MongoDB.Driver;
 
 namespace DeliveryInfrastructure.Services;
 
-public class DeliveryService : BaseMongoDbService<DeliveryDomain.DomainModels.DeliveryDomain, CreateDeliveryRequestDomain, UpdateDeliveryRequestDomain, DeliveryInfra>, IDeliveryService
+public class DeliveryService : BaseMongoDbService<DeliveryDomain.DomainModels.DeliveryDomain, CreateDeliveryDomain, UpdateDeliveryDomain, DeliveryInfra>, IDeliveryService
 {
     protected override string CollectionName => "Deliveries";
     
@@ -30,7 +30,7 @@ public class DeliveryService : BaseMongoDbService<DeliveryDomain.DomainModels.De
         return new CreateIndexModel<DeliveryInfra>(indexKeysDefinition, createIndexOptions);
     }
 
-    protected override UpdateDefinition<DeliveryInfra> GetUpdateDefinition(UpdateDeliveryRequestDomain? domainModelUpdate)
+    protected override UpdateDefinition<DeliveryInfra> GetUpdateDefinition(UpdateDeliveryDomain? domainModelUpdate)
     {
         var mappedStateInfra = Mapper.Map<StateInfra?>(domainModelUpdate?.State);
         if (mappedStateInfra == null)

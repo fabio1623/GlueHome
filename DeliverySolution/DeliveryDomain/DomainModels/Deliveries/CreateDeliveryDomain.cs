@@ -2,7 +2,7 @@ using DeliveryDomain.DomainEnums;
 
 namespace DeliveryDomain.DomainModels.Deliveries;
 
-public class CreateDeliveryRequestDomain
+public class CreateDeliveryDomain
 {
     public StateDomain? State => StateDomain.Created;
     public CreateDeliveryAccessWindowDomain? AccessWindow { get; set; }

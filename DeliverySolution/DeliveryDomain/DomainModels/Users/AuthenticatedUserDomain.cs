@@ -1,6 +1,6 @@
 namespace DeliveryDomain.DomainModels.Users;
 
-public class AuthenticateUserResponseDomain
+public class AuthenticatedUserDomain
 {
     public string? Token { get; set; }
 }

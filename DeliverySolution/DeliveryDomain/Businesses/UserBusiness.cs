@@ -20,7 +20,7 @@ public class UserBusiness : IUserBusiness
         _logger = logger;
     }
     
-    public async Task<AuthenticateUserResponseDomain?> Authenticate(AuthenticateUserRequestDomain? authenticateRequestDomain, CancellationToken cancellationToken)
+    public async Task<AuthenticatedUserDomain?> Authenticate(AuthenticateUserDomain? authenticateRequestDomain, CancellationToken cancellationToken)
     {
         var userDomain = await _userService.GetByUsername(authenticateRequestDomain?.Username, cancellationToken);
         
@@ -34,7 +34,7 @@ public class UserBusiness : IUserBusiness
         // authentication successful so generate jwt token
         var jwtToken = _jwtUtils.GenerateJwtToken(userDomain);
         if (!string.IsNullOrWhiteSpace(jwtToken))
-            return new AuthenticateUserResponseDomain
+            return new AuthenticatedUserDomain
             {
                 Token = jwtToken
             };

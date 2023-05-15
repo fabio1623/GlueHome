@@ -11,7 +11,7 @@ using MongoDB.Driver;
 
 namespace DeliveryInfrastructure.Services;
 
-public class UserService : BaseMongoDbService<UserDomain, CreateUserRequestDomain, UpdateUserRequestDomain, UserInfra>, IUserService
+public class UserService : BaseMongoDbService<UserDomain, CreateUserDomain, UpdateUserDomain, UserInfra>, IUserService
 {
     protected override string? CollectionName => "Users";
     
@@ -29,7 +29,7 @@ public class UserService : BaseMongoDbService<UserDomain, CreateUserRequestDomai
         return new CreateIndexModel<UserInfra>(indexKeysDefinition, createIndexOptions);
     }
 
-    protected override UpdateDefinition<UserInfra> GetUpdateDefinition(UpdateUserRequestDomain? domainModelUpdate)
+    protected override UpdateDefinition<UserInfra> GetUpdateDefinition(UpdateUserDomain? domainModelUpdate)
     {
         var mappedRoleInfra = Mapper.Map<RoleInfra?>(domainModelUpdate?.RoleDomain);
         if (mappedRoleInfra == null)
